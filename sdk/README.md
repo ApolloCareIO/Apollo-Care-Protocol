@@ -251,9 +251,7 @@ try {
 ```
 
 ## Documentation
-
-- [Apollo Care Protocol Documentation](https://docs.apollocare.io)
-- [API Reference](https://docs.apollocare.io/sdk)
+- [X](https://x.com/apollocareio)
 - [GitHub Repository](https://github.com/ApolloCareIO/apollo-care-protocol)
 
 ## License
