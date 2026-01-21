@@ -1,0 +1,26 @@
+# programs/apollo_membership/Cargo.toml
+
+[package]
+name = "apollo_membership"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "apollo_membership"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+[dependencies]
+anchor-lang.workspace = true
+anchor-spl.workspace = true
+apollo_governance = { path = "../apollo_governance", features = ["cpi"] }
+apollo_risk_engine = { path = "../apollo_risk_engine", features = ["cpi"] }
+apollo_reserves = { path = "../apollo_reserves", features = ["cpi"] }

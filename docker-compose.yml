@@ -1,0 +1,86 @@
+# Apollo Care Protocol - Docker Compose Development Environment
+# Usage: docker-compose up -d
+
+version: '3.8'
+
+services:
+  # Local Solana validator
+  validator:
+    image: solanalabs/solana:v1.18.17
+    container_name: apollo-validator
+    command: >
+      solana-test-validator
+      --ledger /var/solana/ledger
+      --rpc-port 8899
+      --faucet-port 9900
+      --limit-ledger-size 50000000
+      --no-bpf-jit
+    ports:
+      - "8899:8899"   # RPC
+      - "8900:8900"   # WebSocket
+      - "9900:9900"   # Faucet
+    volumes:
+      - validator-data:/var/solana/ledger
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8899/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Development environment
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apollo-dev
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/workspace/target
+    depends_on:
+      validator:
+        condition: service_healthy
+    environment:
+      - ANCHOR_PROVIDER_URL=http://validator:8899
+      - ANCHOR_WALLET=/root/.config/solana/id.json
+    command: bash -c "solana config set --url http://validator:8899 && tail -f /dev/null"
+    stdin_open: true
+    tty: true
+
+  # PostgreSQL for indexer (optional)
+  postgres:
+    image: postgres:15-alpine
+    container_name: apollo-postgres
+    environment:
+      POSTGRES_USER: apollo
+      POSTGRES_PASSWORD: apollo_dev_password
+      POSTGRES_DB: apollo_indexer
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    profiles:
+      - indexer
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: apollo-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    profiles:
+      - indexer
+
+volumes:
+  validator-data:
+  cargo-cache:
+  target-cache:
+  postgres-data:
+  redis-data:
+
+networks:
+  default:
+    name: apollo-network

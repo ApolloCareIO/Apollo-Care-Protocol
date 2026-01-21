@@ -1,0 +1,21 @@
+[package]
+name = "apollo_reinsurance"
+version = "0.1.0"
+description = "Apollo Care Protocol - Reinsurance and Shock Absorption System"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "apollo_reinsurance"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.30.1"
+anchor-spl = { version = "0.30.1", features = ["token"] }
+apollo_core = { path = "../apollo_core", features = ["cpi"] }

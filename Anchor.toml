@@ -1,0 +1,64 @@
+# Anchor.toml - Apollo Care Protocol Configuration
+
+[features]
+seeds = false
+skip-lint = false
+
+[programs.localnet]
+apollo_core = "ApC0re111111111111111111111111111111111111"
+apollo_membership = "ApM1111111111111111111111111111111111111111"
+apollo_reserves = "ApR1111111111111111111111111111111111111111"
+apollo_risk_engine = "ApRe1111111111111111111111111111111111111111"
+apollo_claims = "ApC1111111111111111111111111111111111111111"
+apollo_governance = "ApG1111111111111111111111111111111111111111"
+apollo_staking = "ApS1111111111111111111111111111111111111111"
+apollo_reinsurance = "ApoRe111111111111111111111111111111111111111"
+
+[programs.devnet]
+apollo_core = "ApC0re111111111111111111111111111111111111"
+apollo_membership = "ApM1111111111111111111111111111111111111111"
+apollo_reserves = "ApR1111111111111111111111111111111111111111"
+apollo_risk_engine = "ApRe1111111111111111111111111111111111111111"
+apollo_claims = "ApC1111111111111111111111111111111111111111"
+apollo_governance = "ApG1111111111111111111111111111111111111111"
+apollo_staking = "ApS1111111111111111111111111111111111111111"
+apollo_reinsurance = "ApoRe111111111111111111111111111111111111111"
+
+[programs.mainnet]
+apollo_core = "ApC0re111111111111111111111111111111111111"
+apollo_membership = "ApM1111111111111111111111111111111111111111"
+apollo_reserves = "ApR1111111111111111111111111111111111111111"
+apollo_risk_engine = "ApRe1111111111111111111111111111111111111111"
+apollo_claims = "ApC1111111111111111111111111111111111111111"
+apollo_governance = "ApG1111111111111111111111111111111111111111"
+apollo_staking = "ApS1111111111111111111111111111111111111111"
+apollo_reinsurance = "ApoRe111111111111111111111111111111111111111"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+
+[workspace]
+members = [
+    "programs/apollo_core",
+    "programs/apollo_membership",
+    "programs/apollo_reserves", 
+    "programs/apollo_risk_engine",
+    "programs/apollo_claims",
+    "programs/apollo_governance",
+    "programs/apollo_staking",
+    "programs/apollo_reinsurance"
+]
+
+[test]
+startup_wait = 5000
+shutdown_wait = 2000
+
+[test.validator]
+url = "https://api.mainnet-beta.solana.com"

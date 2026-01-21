@@ -29,9 +29,9 @@
 
 <p align="center">
   <a href="https://apollocare.io">🌐 Website</a> •
-  <a href="https://docs.apollocare.io">📖 Docs</a> •
+  <a href="https://apollocare.io/documentation">📖 Docs</a> •
   <a href="https://x.com/apollocareio">𝕏 Twitter</a> •
-  <a href="https://www.instagram.com/apollocare.io">📸 Instagram</a> •
+  <a href="https://www.instagram.com/apollocare.io/">📸 Instagram</a> •
   <a href="https://www.facebook.com/apollocare.io">📘 Facebook</a>
 </p>
 
@@ -83,16 +83,16 @@ Apollo Care Protocol consists of 7 interconnected Solana programs:
 │                      │ (Shared)    │                            │
 │                      └──────┬──────┘                            │
 │                             │                                   │
-│   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐      │
-│   │  GOVERNANCE │────▶│   STAKING   │────▶│  RESERVES   │      │
-│   │    (DAO)    │     │  (3-Tier)   │     │  (3-Tier)   │      │
-│   └──────┬──────┘     └─────────────┘     └──────┬──────┘      │
+│   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐       │
+│   │  GOVERNANCE │────▶│   STAKING   │────▶│  RESERVES   │       │
+│   │    (DAO)    │     │  (3-Tier)   │     │  (3-Tier)   │       │
+│   └──────┬──────┘     └─────────────┘     └──────┬──────┘       │
 │          │                                       │              │
 │          ▼                                       ▼              │
-│   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐      │
-│   │    RISK     │────▶│ MEMBERSHIP  │────▶│   CLAIMS    │      │
-│   │   ENGINE    │     │             │     │             │      │
-│   └─────────────┘     └─────────────┘     └─────────────┘      │
+│   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐       │
+│   │    RISK     │────▶│ MEMBERSHIP  │────▶│   CLAIMS    │       │
+│   │   ENGINE    │     │             │     │             │       │
+│   └─────────────┘     └─────────────┘     └─────────────┘       │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```

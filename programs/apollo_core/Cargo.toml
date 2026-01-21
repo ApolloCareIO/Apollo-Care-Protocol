@@ -1,0 +1,29 @@
+# programs/apollo_core/Cargo.toml
+#
+# Apollo Core - Shared Constants and Token-2022 Utilities
+# Contains APH token configuration and cross-program constants
+
+[package]
+name = "apollo_core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Shared constants, APH Token-2022 integration, and utilities for Apollo Care Protocol"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "apollo_core"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+[dependencies]
+anchor-lang.workspace = true
+anchor-spl.workspace = true
+spl-token-2022 = "5.0"
+spl-transfer-hook-interface = "0.8"

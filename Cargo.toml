@@ -1,0 +1,38 @@
+# Cargo.toml - Apollo Care Protocol Workspace
+
+[workspace]
+members = [
+    "programs/apollo_core",
+    "programs/apollo_membership",
+    "programs/apollo_reserves",
+    "programs/apollo_risk_engine",
+    "programs/apollo_claims",
+    "programs/apollo_governance",
+    "programs/apollo_staking",
+    "programs/apollo_reinsurance"
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/apollocare/apollo-care-protocol"
+authors = ["Apollo Care Team <dev@apollocare.io>"]
+
+[workspace.dependencies]
+anchor-lang = "0.30.1"
+anchor-spl = "0.30.1"
+solana-program = "1.18"
+spl-token-2022 = "5.0"
+spl-transfer-hook-interface = "0.8"
+
+[profile.release]
+overflow-checks = true
+lto = "fat"
+codegen-units = 1
+
+[profile.release.build-override]
+opt-level = 3
+incremental = false
+codegen-units = 1
