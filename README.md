@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="[https://apollocare.io/logo.png](https://avatars.githubusercontent.com/u/236255778?v=4)" alt="Apollo Care Logo" width="200"/>
+  <img src="https://avatars.githubusercontent.com/u/236255778?v=4" alt="Apollo Care Logo" width="200"/>
 </p>
 
 <h1 align="center">Apollo Care Protocol</h1>
