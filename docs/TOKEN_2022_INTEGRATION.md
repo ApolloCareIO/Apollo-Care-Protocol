@@ -6,7 +6,6 @@ Apollo Care Protocol uses the **APH Token** as its native governance and staking
 
 ### Token Details
 
-| Property | Value |
 |----------|-------|
 | **Token Name** | Apollo Care Token |
 | **Symbol** | APH |
@@ -33,8 +32,8 @@ Apollo Care tokenizes the healthcare coverage infrastructure layer, transforming
 | Category | Percentage | Amount | Purpose |
 |----------|------------|--------|---------|
 | **Community & Ecosystem** | 47% | 470M APH | DAO treasury for ICO, rewards, grants, partnerships, marketing |
-| **Core Team** | 22% | 220M APH | Founders & advisors (4-year vest, 1-year cliff) |
-| **Seed & Strategic** | 10% | 100M APH | Early investors (2-year vest, 6-month cliff) |
+| **Core Team** | 22% | 220M APH | Founders & advisors |
+| **Seed & Strategic** | 10% | 100M APH | Early investors |
 | **Insurance Reserve** | 10% | 100M APH | DAO-controlled emergency fund for claim shortfalls |
 | **Liquidity** | 6% | 60M APH | DEX liquidity pools (Raydium, etc.) |
 | **Operations** | 5% | 50M APH | Platform maintenance, infrastructure, legal/regulatory |
