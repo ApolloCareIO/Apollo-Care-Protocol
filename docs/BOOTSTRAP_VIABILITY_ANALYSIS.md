@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document analyzes Apollo Care's viability at bootstrap scale ($1.5M-$5M capital) vs. the originally planned $50M ICO. The analysis covers smart contract adjustments for small-scale operation, AI/ML claims processing optimization, and Phase 1→2→3 transition mechanics.
+This document analyzes Apollo Care's viability at bootstrap scale ($1.5M-$5M capital). The analysis covers smart contract adjustments for small-scale operation, AI/ML claims processing optimization, and Phase 1→2→3 transition mechanics.
 
 **Key Finding**: The protocol is viable at bootstrap scale with targeted adjustments. The core smart contract architecture is sound; the primary changes are operational parameters, not structural redesigns.
 
@@ -156,59 +156,59 @@ The protocol already implements the correct three-tier structure. Here's how to 
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    CLAIM SUBMISSION                              │
-│              (apollo_claims::submit_claim)                       │
+│                    CLAIM SUBMISSION                             │
+│              (apollo_claims::submit_claim)                      │
 └─────────────────────────────┬───────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                 TIER 1: FAST-LANE AUTO-APPROVAL                  │
-│                                                                  │
-│  Criteria:                                                       │
+│                 TIER 1: FAST-LANE AUTO-APPROVAL                 │
+│                                                                 │
+│  Criteria:                                                      │
 │  • Amount ≤ $500 (bootstrap) / $1,000 (scaled)                  │
-│  • Category: PrimaryCare, Prescription, Laboratory, Preventive   │
-│  • Member in good standing (active, no flags)                    │
+│  • Category: PrimaryCare, Prescription, Laboratory, Preventive  │
+│  • Member in good standing (active, no flags)                   │
 │  • ≤ 5 fast-lane claims in rolling 30 days                      │
-│                                                                  │
-│  Action: Instant approval → Payment within seconds               │
-│  Target: 60-70% of claims by volume                              │
+│                                                                 │
+│  Action: Instant approval → Payment within seconds              │
+│  Target: 60-70% of claims by volume                             │
 └─────────────────────────────┬───────────────────────────────────┘
                               │ Not eligible
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                 TIER 2: AI-ASSISTED TRIAGE                       │
-│                                                                  │
-│  ML Model Checks:                                                │
-│  • Price reasonableness (vs regional UCR database)               │
-│  • Procedure-diagnosis consistency                               │
-│  • Frequency analysis (duplicate detection)                      │
-│  • Provider reputation scoring                                   │
-│  • Member claims pattern analysis                                │
-│                                                                  │
-│  Outputs:                                                        │
-│  • APPROVE (confidence > 95%) → Auto-approve, pay                │
-│  • REVIEW (confidence 70-95%) → Flag for committee               │
-│  • DENY (confidence > 95% fraud) → Auto-deny with reason         │
-│                                                                  │
-│  Target: 25-30% of claims, 80% auto-resolved                     │
+│                 TIER 2: AI-ASSISTED TRIAGE                      │
+│                                                                 │
+│  ML Model Checks:                                               │
+│  • Price reasonableness (vs regional UCR database)              │
+│  • Procedure-diagnosis consistency                              │
+│  • Frequency analysis (duplicate detection)                     │
+│  • Provider reputation scoring                                  │
+│  • Member claims pattern analysis                               │
+│                                                                 │
+│  Outputs:                                                       │
+│  • APPROVE (confidence > 95%) → Auto-approve, pay               │
+│  • REVIEW (confidence 70-95%) → Flag for committee              │
+│  • DENY (confidence > 95% fraud) → Auto-deny with reason        │
+│                                                                 │
+│  Target: 25-30% of claims, 80% auto-resolved                    │
 └─────────────────────────────┬───────────────────────────────────┘
                               │ Flagged/Complex
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                 TIER 3: COMMITTEE ESCALATION                     │
-│                                                                  │
-│  Triggers:                                                       │
-│  • Amount > $25k (shock claim threshold)                         │
-│  • AI confidence < 70%                                           │
-│  • Appeal of denied claim                                        │
-│  • Experimental/novel treatment                                  │
-│                                                                  │
-│  Process:                                                        │
-│  • Claims Committee review (2+ attestations required)            │
-│  • 48-hour SLA for decision                                      │
-│  • If still contested → DAO vote                                 │
-│                                                                  │
-│  Target: 5-10% of claims                                         │
+│                 TIER 3: COMMITTEE ESCALATION                    │
+│                                                                 │
+│  Triggers:                                                      │
+│  • Amount > $25k (shock claim threshold)                        │
+│  • AI confidence < 70%                                          │
+│  • Appeal of denied claim                                       │
+│  • Experimental/novel treatment                                 │
+│                                                                 │
+│  Process:                                                       │
+│  • Claims Committee review (2+ attestations required)           │
+│  • 48-hour SLA for decision                                     │
+│  • If still contested → DAO vote                                │
+│                                                                 │
+│  Target: 5-10% of claims                                        │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
