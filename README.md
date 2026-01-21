@@ -126,7 +126,7 @@ Apollo Care Protocol consists of 7 interconnected Solana programs:
 
 ### Token Info
 
-| Property | Value |
+|  |  |
 |----------|-------|
 | Token Name | Apollo Care |
 | Symbol | $APH |
