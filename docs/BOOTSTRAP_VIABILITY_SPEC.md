@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document addresses Apollo Care's viability at **bootstrap scale** ($1.5M-$5M capital) versus the originally envisioned $50M ICO. It covers:
+This document addresses Apollo Care's viability at **bootstrap scale** ($1.5M-$5M capital). It covers:
 
 1. **Small-Scale Viability** - Parameter adjustments for lean operations
 2. **AI/ML Claims Processing** - Core product differentiation
@@ -114,9 +114,9 @@ pub fn calculate_enrollment_capacity(
 ### 2.1 Three-Tier Architecture (Per Whitepaper)
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    CLAIMS SUBMISSION                            │
-│                         ↓                                       │
+┌────────────────────────────────────────────────────────────────┐
+│                    CLAIMS SUBMISSION                           │
+│                         ↓                                      │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │  TIER 1: FAST-LANE AUTO-APPROVAL                        │   │
 │  │  • Claims < $500 (bootstrap) / $1,000 (scaled)          │   │
@@ -125,7 +125,7 @@ pub fn calculate_enrollment_capacity(
 │  │  • No flags in fraud scoring                            │   │
 │  │  → INSTANT PAYOUT (seconds)                             │   │
 │  └─────────────────────────────────────────────────────────┘   │
-│                         ↓ (if not fast-lane)                    │
+│                         ↓ (if not fast-lane)                   │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │  TIER 2: AI-ASSISTED TRIAGE                             │   │
 │  │  • ML fraud scoring (0-100 risk score)                  │   │
@@ -136,7 +136,7 @@ pub fn calculate_enrollment_capacity(
 │  │  → FLAG for review if score 30-70                       │   │
 │  │  → ESCALATE if score > 70                               │   │
 │  └─────────────────────────────────────────────────────────┘   │
-│                         ↓ (if flagged/escalated)                │
+│                         ↓ (if flagged/escalated)               │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │  TIER 3: COMMITTEE/DAO REVIEW                           │   │
 │  │  • Claims Committee (2+ attestations)                   │   │
@@ -144,7 +144,7 @@ pub fn calculate_enrollment_capacity(
 │  │  • DAO vote for shock claims (>$25K bootstrap)          │   │
 │  │  → HUMAN DECISION (1-7 days)                            │   │
 │  └─────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────────────┘
 ```
 
 ### 2.2 AI Oracle Integration
