@@ -6,6 +6,7 @@ Apollo Care Protocol uses the **APH Token** as its native governance and staking
 
 ### Token Details
 
+|  |  |
 |----------|-------|
 | **Token Name** | Apollo Care Token |
 | **Symbol** | APH |
