@@ -1,14 +1,8 @@
 # Apollo Care Protocol: Actuarial Framework
 
-## Reference Authority
-
-**Primary Reference**: Morrisey, Michael A. *Health Insurance* (3rd Edition)
-
-The Apollo Care spec documents are **illustrative**. This implementation aligns with the authoritative textbook for actuarial principles while treating Apollo-specific parameters as governance-configurable values.
-
 ---
 
-## Part 1: Industry Standards (per Morrisey)
+## Part 1: Industry Standards
 
 These are regulatory requirements or empirical norms from the insurance industry.
 
@@ -136,8 +130,8 @@ Claims → Tier 0 → Tier 1 → Tier 2 → Staked APH Liquidation
 | Category | Percentage | Amount | Control |
 |----------|------------|--------|---------|
 | Community & Ecosystem | 47% | 470M APH | DAO |
-| Core Team & Advisors | 22% | 220M APH | 4yr vest |
-| Seed & Strategic | 10% | 100M APH | 2yr vest |
+| Core Team & Advisors | 22% | 220M APH | Vest Sched. |
+| Seed & Strategic | 10% | 100M APH | Vest Sched. |
 | Insurance Reserve | 10% | 100M APH | DAO |
 | Liquidity & Exchanges | 6% | 60M APH | DEX pools |
 | Operations | 5% | 50M APH | Platform costs |
