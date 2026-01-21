@@ -13,30 +13,30 @@ Apollo Care Protocol is designed from the ground up with AI/ML integration as a 
 Every transaction, claim, and member interaction generates structured data that feeds ML pipelines:
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         DATA FLOW ARCHITECTURE                               │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
+┌───────────────────────────────────────────────────────────────────────────┐
+│                         DATA FLOW ARCHITECTURE                            │
+├───────────────────────────────────────────────────────────────────────────┤
+│                                                                           │
 │  ┌──────────────┐     ┌──────────────┐     ┌──────────────────────────┐   │
 │  │   On-Chain   │────▶│  Event Logs  │────▶│  ML Feature Pipeline     │   │
 │  │ Transactions │     │   (Indexed)  │     │  (Off-chain Processing)  │   │
 │  └──────────────┘     └──────────────┘     └───────────┬──────────────┘   │
-│                                                         │                   │
-│                                                         ▼                   │
+│                                                        │                  │
+│                                                        ▼                  │
 │  ┌──────────────────────────────────────────────────────────────────────┐ │
-│  │                        ML MODEL LAYERS                                │ │
+│  │                        ML MODEL LAYERS                               │ │
 │  ├──────────────────┬───────────────────┬───────────────────────────────┤ │
 │  │  Claims Triage   │  Fraud Detection  │  Dynamic Pricing              │ │
 │  │  (XGBoost/NN)    │  (Anomaly Det.)   │  (Gradient Boosting)          │ │
 │  └──────────────────┴───────────────────┴───────────────────────────────┘ │
-│                              │                                             │
-│                              ▼                                             │
+│                              │                                            │
+│                              ▼                                            │
 │  ┌──────────────────────────────────────────────────────────────────────┐ │
-│  │                    CLAIMS ORACLE PROGRAM                              │ │
-│  │         (Verifiable AI decisions recorded on-chain)                   │ │
+│  │                    CLAIMS ORACLE PROGRAM                             │ │
+│  │         (Verifiable AI decisions recorded on-chain)                  │ │
 │  └──────────────────────────────────────────────────────────────────────┘ │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### 2. Three-Tier Claims Processing with AI
