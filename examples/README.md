@@ -148,7 +148,7 @@ connection.removeOnLogsListener(subscriptionId);
 
 ## Support
 
-- **Documentation**: [apollocare.io]((https://apollocare.io/documentation)
+- **Documentation**: [apollocare.io](https://apollocare.io/documentation)
 - **X**: [x.com/apollocareio](https://x.com/apollocareio)
 - **Discord**: [discord.gg/apollocare.io](https://discord.gg/apollocareio)
 - **Issues**: [GitHub Issues](https://github.com/ApolloCareIO/apollo-care-protocol/issues)
