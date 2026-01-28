@@ -14,7 +14,7 @@ pub struct ReserveConfig {
     pub usdc_mint: Pubkey,
 
     /// Tier 0 (Liquidity Buffer) target in days of expected claims
-    /// Default: 15-30 days
+    /// Default: 0-30 days days
     pub tier0_target_days: u16,
 
     /// Tier 1 (Operating Reserve) target in days of expected claims
