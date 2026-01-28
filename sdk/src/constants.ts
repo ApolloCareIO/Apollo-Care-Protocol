@@ -31,10 +31,10 @@ export const CAR_ZONES = {
 
 /** Reserve tier targets (days of coverage) */
 export const RESERVE_DAYS = {
-  TIER0_MIN: 15,   // Liquidity buffer minimum
+  TIER0_MIN: 0,   // Liquidity buffer minimum
   TIER0_TARGET: 30, // Liquidity buffer target
-  TIER1_MIN: 60,   // Operating reserve minimum
-  TIER1_TARGET: 90, // Operating reserve target (+ IBNR)
+  TIER1_MIN: 30,   // Operating reserve minimum
+  TIER1_TARGET: 60, // Operating reserve target (+ IBNR)
   TIER2_MIN: 180,  // Contingent capital minimum
   TIER2_TARGET: 365, // Contingent capital target (6+ months)
 } as const;
