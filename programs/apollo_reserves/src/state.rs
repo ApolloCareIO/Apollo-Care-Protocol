@@ -18,7 +18,7 @@ pub struct ReserveConfig {
     pub tier0_target_days: u16,
 
     /// Tier 1 (Operating Reserve) target in days of expected claims
-    /// Default: 60-90 days + IBNR
+    /// Default: 30-60 days + IBNR
     pub tier1_target_days: u16,
 
     /// Tier 2 (Contingent Capital) target in days of expected claims
