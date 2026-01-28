@@ -512,7 +512,7 @@ pub mod actuarial {
     /// Tier 0: Liquidity Buffer (Apollo design)
     /// Purpose: Real-time claims fund for instant payouts
     /// Typical: ~1 week to 1 month of claims kept liquid
-    pub const TIER0_MIN_DAYS: u8 = 7;
+    pub const TIER0_MIN_DAYS: u8 = 0;
     pub const TIER0_TARGET_DAYS: u8 = 30;
 
     /// Tier 1: Operating Reserve (Apollo design)
