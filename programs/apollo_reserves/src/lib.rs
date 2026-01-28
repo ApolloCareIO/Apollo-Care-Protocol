@@ -3,8 +3,8 @@
 // Apollo Reserves Program
 // =======================
 // Manages the three-tier reserve system for Apollo Care:
-// - Tier 0: Liquidity Buffer (15-30 days claims)
-// - Tier 1: Operating Reserve (60-90 days + IBNR)
+// - Tier 0: Liquidity Buffer (0-30 days claims)
+// - Tier 1: Operating Reserve (30-60 days + IBNR)
 // - Tier 2: Contingent Capital (6+ months)
 // Plus run-off reserves for wind-down scenarios.
 
