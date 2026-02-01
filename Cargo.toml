@@ -21,10 +21,10 @@ repository = "https://github.com/apollocare/apollo-care-protocol"
 authors = ["Apollo Care Team <dev@apollocare.io>"]
 
 [workspace.dependencies]
-# Downgrade to anchor 0.28.0 to avoid edition2024 deps
+# Using Anchor 0.29.0 for compatibility
 anchor-lang = { version = "0.29.0", features = ["init-if-needed"] }
 anchor-spl = "0.29.0"
-solana-program = "1.17"
+solana-program = "1.18"
 
 # Patch problematic edition2024 crates with older versions
 [profile.release]

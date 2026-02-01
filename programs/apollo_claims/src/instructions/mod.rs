@@ -12,6 +12,6 @@ pub use initialize::*;
 pub use submission::*;
 pub use attestation::*;
 pub use resolution::*;
-pub use fast_lane::*;
-pub use oracle::*;
+// Note: fast_lane and oracle exports removed to avoid name collision with ai_processing
+// Use module:: prefix to access specific types (fast_lane::, oracle::)
 pub use ai_processing::*;
