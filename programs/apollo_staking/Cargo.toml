@@ -20,7 +20,6 @@ idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
 
 [dependencies]
 anchor-lang.workspace = true
-anchor-spl.workspace = true
-spl-token-2022.workspace = true
+anchor-spl = { workspace = true, features = ["token_2022"] }
 apollo_core = { path = "../apollo_core", features = ["cpi"] }
 apollo_governance = { path = "../apollo_governance", features = ["cpi"] }

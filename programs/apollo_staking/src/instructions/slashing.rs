@@ -256,6 +256,9 @@ pub fn execute_liquidation(
         StakingError::PositionNotFound
     );
 
+    // Capture values before mutable borrow
+    let circuit_breaker_bps = liq_queue.circuit_breaker_bps;
+    
     let entry = &mut liq_queue.entries[entry_index as usize];
 
     require!(!entry.is_complete, StakingError::PositionAlreadyClosed);
@@ -290,12 +293,12 @@ pub fn execute_liquidation(
     };
 
     // Check circuit breaker
-    if slippage_bps > liq_queue.circuit_breaker_bps {
+    if slippage_bps > circuit_breaker_bps {
         liq_queue.is_paused = true;
 
         emit!(CircuitBreakerTriggered {
             slippage_observed_bps: slippage_bps,
-            threshold_bps: liq_queue.circuit_breaker_bps,
+            threshold_bps: circuit_breaker_bps,
             timestamp: clock.unix_timestamp,
         });
 

@@ -16,7 +16,7 @@ pub mod instructions;
 use instructions::*;
 use state::{AdminAction, CommitteeType};
 
-declare_id!("ApG1111111111111111111111111111111111111111");
+declare_id!("HynmZCjBZ5eHXL48Z7db6CwiCjh6KMXnCHXrsP11Vzdd");
 
 #[program]
 pub mod apollo_governance {

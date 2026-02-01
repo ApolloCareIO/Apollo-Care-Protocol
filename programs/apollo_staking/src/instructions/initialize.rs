@@ -128,8 +128,9 @@ pub fn handler(ctx: Context<InitializeStakingConfig>, params: InitializeStakingC
     config.emergency_unstake_fee_bps = StakingConfig::DEFAULT_EMERGENCY_FEE_BPS;
     config.bump = ctx.bumps.staking_config;
 
+    let vault_key = ctx.accounts.aph_vault.key();
     let vault = &mut ctx.accounts.aph_vault;
-    vault.authority = ctx.accounts.aph_vault.key();
+    vault.authority = vault_key;
     vault.token_account = ctx.accounts.vault_token_account.key();
     vault.total_aph = 0;
     vault.rewards_available = 0;

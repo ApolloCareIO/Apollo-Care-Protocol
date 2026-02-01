@@ -8,7 +8,7 @@ pub mod instructions;
 use instructions::*;
 use state::TreatyStatus;
 
-declare_id!("ApoRe111111111111111111111111111111111111111");
+declare_id!("7b2bnKcX2jBZ5VoV9HE7i1HWsFLTUbsLDNLuSjLBsnpo");
 
 /// Apollo Care Protocol - Reinsurance Program
 /// 

@@ -17,11 +17,12 @@ pub mod state;
 pub mod errors;
 pub mod events;
 pub mod instructions;
+pub mod ai_oracle;
 
 use instructions::*;
 use state::{ClaimCategory, AttestationRecommendation, CategoryLimit};
 
-declare_id!("ApC1111111111111111111111111111111111111111");
+declare_id!("J65pg6g7caJvSvfGBsuwzzYiyxR1EJePP1NGuaPqRK6C");
 
 #[program]
 pub mod apollo_claims {

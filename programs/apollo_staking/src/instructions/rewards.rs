@@ -174,6 +174,9 @@ pub struct ClaimRewards<'info> {
 
 pub fn claim_rewards(ctx: Context<ClaimRewards>) -> Result<()> {
     let clock = Clock::get()?;
+    // Get account infos before mutable borrows
+    let vault_account_info = ctx.accounts.aph_vault.to_account_info();
+    
     let position = &mut ctx.accounts.stake_position;
     let tier = &mut ctx.accounts.staking_tier;
     let vault = &mut ctx.accounts.aph_vault;
@@ -201,7 +204,7 @@ pub fn claim_rewards(ctx: Context<ClaimRewards>) -> Result<()> {
                 from: ctx.accounts.vault_token_account.to_account_info(),
                 mint: ctx.accounts.aph_mint.to_account_info(),
                 to: ctx.accounts.staker_token_account.to_account_info(),
-                authority: ctx.accounts.aph_vault.to_account_info(),
+                authority: vault_account_info.clone(),
             },
             signer_seeds,
         ),

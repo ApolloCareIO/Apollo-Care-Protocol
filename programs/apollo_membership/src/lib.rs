@@ -19,7 +19,7 @@ pub mod instructions;
 use instructions::*;
 use state::QualifyingEvent;
 
-declare_id!("ApM1111111111111111111111111111111111111111");
+declare_id!("CHJ4Bdc9wqKy6pjSiC3URjs53iDQpn58MPeAgLQVqRW1");
 
 #[program]
 pub mod apollo_membership {

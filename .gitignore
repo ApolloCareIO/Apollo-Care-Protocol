@@ -1,0 +1,26 @@
+# Build artifacts
+target/
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Anchor
+.anchor/
+
+# Solana keypairs
+*.json
+!package.json
+!tsconfig.json
+!Anchor.toml
+
+# Env
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db

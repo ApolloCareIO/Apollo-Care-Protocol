@@ -17,7 +17,7 @@ pub mod instructions;
 
 use instructions::*;
 
-declare_id!("ApR1111111111111111111111111111111111111111");
+declare_id!("4kZvvmDi1d9xKFzB7i7qK2psgFnbpmNfNTPJEnyAsUhh");
 
 #[program]
 pub mod apollo_reserves {

@@ -139,8 +139,9 @@ pub struct ReinsuranceConfig {
     /// Bump seed for PDA
     pub bump: u8,
     
-    /// Reserved for future use
-    pub _reserved: [u8; 64],
+    /// Reserved for future use (split to avoid Default trait limitation)
+    pub _reserved1: [u8; 32],
+    pub _reserved2: [u8; 32],
 }
 
 impl ReinsuranceConfig {

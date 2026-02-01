@@ -23,7 +23,7 @@ pub mod instructions;
 
 use instructions::*;
 
-declare_id!("ApS1111111111111111111111111111111111111111");
+declare_id!("AiJ1Gs6uGeoH5RXYUAZLZGyCotDFTRFUB3krQzrp3r5C");
 
 #[program]
 pub mod apollo_staking {

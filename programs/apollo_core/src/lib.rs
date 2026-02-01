@@ -17,7 +17,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token_2022::{self, Token2022};
 use anchor_spl::token_interface::{Mint as MintInterface, TokenAccount as TokenAccountInterface};
 
-declare_id!("ApC0re111111111111111111111111111111111111");
+declare_id!("DHGQUHAXRvEiHA4J3JhxKdSLkqvyKPyZYaciLfMA5yok");
 
 // =============================================================================
 // SUBMODULES
@@ -914,8 +914,6 @@ pub mod phases {
 }
 
 pub mod protocol_constants {
-    use super::actuarial::BPS_DENOMINATOR;
-
     /// USDC decimals (6)
     pub const USDC_DECIMALS: u8 = 6;
 
@@ -935,7 +933,7 @@ pub mod protocol_constants {
     pub const MAX_PROTOCOL_FEE_BPS: u16 = 500;
 
     /// Re-export BPS_DENOMINATOR for convenience
-    pub const BPS_DENOMINATOR: u64 = BPS_DENOMINATOR;
+    pub const BPS_DENOMINATOR: u64 = super::actuarial::BPS_DENOMINATOR;
 }
 
 // =============================================================================

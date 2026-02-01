@@ -1,38 +1,41 @@
 # Anchor.toml - Apollo Care Protocol Configuration
 
+[toolchain]
+anchor_version = "0.29.0"
+
 [features]
 seeds = false
 skip-lint = false
 
 [programs.localnet]
-apollo_core = "ApC0re111111111111111111111111111111111111"
-apollo_membership = "ApM1111111111111111111111111111111111111111"
-apollo_reserves = "ApR1111111111111111111111111111111111111111"
-apollo_risk_engine = "ApRe1111111111111111111111111111111111111111"
-apollo_claims = "ApC1111111111111111111111111111111111111111"
-apollo_governance = "ApG1111111111111111111111111111111111111111"
-apollo_staking = "ApS1111111111111111111111111111111111111111"
-apollo_reinsurance = "ApoRe111111111111111111111111111111111111111"
+apollo_core = "DHGQUHAXRvEiHA4J3JhxKdSLkqvyKPyZYaciLfMA5yok"
+apollo_membership = "CHJ4Bdc9wqKy6pjSiC3URjs53iDQpn58MPeAgLQVqRW1"
+apollo_reserves = "4kZvvmDi1d9xKFzB7i7qK2psgFnbpmNfNTPJEnyAsUhh"
+apollo_risk_engine = "FdTXXgEMT1k5YghXxpe1etxDEBorJ7z1soPmkRQAW8mB"
+apollo_claims = "J65pg6g7caJvSvfGBsuwzzYiyxR1EJePP1NGuaPqRK6C"
+apollo_governance = "HynmZCjBZ5eHXL48Z7db6CwiCjh6KMXnCHXrsP11Vzdd"
+apollo_staking = "AiJ1Gs6uGeoH5RXYUAZLZGyCotDFTRFUB3krQzrp3r5C"
+apollo_reinsurance = "7b2bnKcX2jBZ5VoV9HE7i1HWsFLTUbsLDNLuSjLBsnpo"
 
 [programs.devnet]
-apollo_core = "ApC0re111111111111111111111111111111111111"
-apollo_membership = "ApM1111111111111111111111111111111111111111"
-apollo_reserves = "ApR1111111111111111111111111111111111111111"
-apollo_risk_engine = "ApRe1111111111111111111111111111111111111111"
-apollo_claims = "ApC1111111111111111111111111111111111111111"
-apollo_governance = "ApG1111111111111111111111111111111111111111"
-apollo_staking = "ApS1111111111111111111111111111111111111111"
-apollo_reinsurance = "ApoRe111111111111111111111111111111111111111"
+apollo_core = "DHGQUHAXRvEiHA4J3JhxKdSLkqvyKPyZYaciLfMA5yok"
+apollo_membership = "CHJ4Bdc9wqKy6pjSiC3URjs53iDQpn58MPeAgLQVqRW1"
+apollo_reserves = "4kZvvmDi1d9xKFzB7i7qK2psgFnbpmNfNTPJEnyAsUhh"
+apollo_risk_engine = "FdTXXgEMT1k5YghXxpe1etxDEBorJ7z1soPmkRQAW8mB"
+apollo_claims = "J65pg6g7caJvSvfGBsuwzzYiyxR1EJePP1NGuaPqRK6C"
+apollo_governance = "HynmZCjBZ5eHXL48Z7db6CwiCjh6KMXnCHXrsP11Vzdd"
+apollo_staking = "AiJ1Gs6uGeoH5RXYUAZLZGyCotDFTRFUB3krQzrp3r5C"
+apollo_reinsurance = "7b2bnKcX2jBZ5VoV9HE7i1HWsFLTUbsLDNLuSjLBsnpo"
 
 [programs.mainnet]
-apollo_core = "ApC0re111111111111111111111111111111111111"
-apollo_membership = "ApM1111111111111111111111111111111111111111"
-apollo_reserves = "ApR1111111111111111111111111111111111111111"
-apollo_risk_engine = "ApRe1111111111111111111111111111111111111111"
-apollo_claims = "ApC1111111111111111111111111111111111111111"
-apollo_governance = "ApG1111111111111111111111111111111111111111"
-apollo_staking = "ApS1111111111111111111111111111111111111111"
-apollo_reinsurance = "ApoRe111111111111111111111111111111111111111"
+apollo_core = "DHGQUHAXRvEiHA4J3JhxKdSLkqvyKPyZYaciLfMA5yok"
+apollo_membership = "CHJ4Bdc9wqKy6pjSiC3URjs53iDQpn58MPeAgLQVqRW1"
+apollo_reserves = "4kZvvmDi1d9xKFzB7i7qK2psgFnbpmNfNTPJEnyAsUhh"
+apollo_risk_engine = "FdTXXgEMT1k5YghXxpe1etxDEBorJ7z1soPmkRQAW8mB"
+apollo_claims = "J65pg6g7caJvSvfGBsuwzzYiyxR1EJePP1NGuaPqRK6C"
+apollo_governance = "HynmZCjBZ5eHXL48Z7db6CwiCjh6KMXnCHXrsP11Vzdd"
+apollo_staking = "AiJ1Gs6uGeoH5RXYUAZLZGyCotDFTRFUB3krQzrp3r5C"
+apollo_reinsurance = "7b2bnKcX2jBZ5VoV9HE7i1HWsFLTUbsLDNLuSjLBsnpo"
 
 [registry]
 url = "https://api.apr.dev"
@@ -61,4 +64,4 @@ startup_wait = 5000
 shutdown_wait = 2000
 
 [test.validator]
-url = "https://api.mainnet-beta.solana.com"
+url = "https://api.devnet.solana.com"

@@ -222,7 +222,7 @@ pub struct InitializeMonthlyAggregate<'info> {
         space = MonthlyAggregate::SIZE,
         seeds = [
             b"monthly_aggregate",
-            &policy_year.to_le_bytes(),
+            policy_year.to_le_bytes().as_ref(),
             &[month]
         ],
         bump

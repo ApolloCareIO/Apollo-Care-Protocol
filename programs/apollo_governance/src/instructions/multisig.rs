@@ -111,6 +111,7 @@ pub struct AddSigner<'info> {
 
 pub fn add_signer(ctx: Context<AddSigner>, new_signer: Pubkey) -> Result<()> {
     let clock = Clock::get()?;
+    let multisig_key = ctx.accounts.multisig.key();
     let multisig = &mut ctx.accounts.multisig;
 
     require!(multisig.is_active, GovernanceError::MultisigNotActive);
@@ -127,7 +128,7 @@ pub fn add_signer(ctx: Context<AddSigner>, new_signer: Pubkey) -> Result<()> {
     multisig.signer_count += 1;
 
     emit!(SignerAdded {
-        multisig: ctx.accounts.multisig.key(),
+        multisig: multisig_key,
         signer: new_signer,
         new_count: multisig.signer_count,
         timestamp: clock.unix_timestamp,
@@ -277,6 +278,7 @@ pub fn create_signer_set(ctx: Context<CreateSignerSet>, params: CreateSignerSetP
 
     require!(expiry > 0, GovernanceError::InvalidExpiration);
 
+    let signer_set_key = ctx.accounts.signer_set.key();
     let signer_set = &mut ctx.accounts.signer_set;
     signer_set.multisig = ctx.accounts.multisig.key();
     signer_set.action_id = params.action_id;
@@ -290,7 +292,7 @@ pub fn create_signer_set(ctx: Context<CreateSignerSet>, params: CreateSignerSetP
     signer_set.bump = ctx.bumps.signer_set;
 
     emit!(ActionApproved {
-        signer_set: ctx.accounts.signer_set.key(),
+        signer_set: signer_set_key,
         signer: ctx.accounts.proposer.key(),
         action_type: signer_set.action_type,
         approval_count: 1,
@@ -326,6 +328,7 @@ pub struct ApproveAction<'info> {
 
 pub fn approve_action(ctx: Context<ApproveAction>) -> Result<()> {
     let clock = Clock::get()?;
+    let signer_set_key = ctx.accounts.signer_set.key();
     let signer_set = &mut ctx.accounts.signer_set;
 
     require!(
@@ -340,7 +343,7 @@ pub fn approve_action(ctx: Context<ApproveAction>) -> Result<()> {
     signer_set.approvals.push(ctx.accounts.signer.key());
 
     emit!(ActionApproved {
-        signer_set: ctx.accounts.signer_set.key(),
+        signer_set: signer_set_key,
         signer: ctx.accounts.signer.key(),
         action_type: signer_set.action_type,
         approval_count: signer_set.approvals.len() as u8,
@@ -417,12 +420,13 @@ pub struct MarkExecuted<'info> {
 
 pub fn mark_executed(ctx: Context<MarkExecuted>) -> Result<()> {
     let clock = Clock::get()?;
+    let signer_set_key = ctx.accounts.signer_set.key();
     let signer_set = &mut ctx.accounts.signer_set;
 
     signer_set.executed = true;
 
     emit!(ActionExecuted {
-        signer_set: ctx.accounts.signer_set.key(),
+        signer_set: signer_set_key,
         action_type: signer_set.action_type,
         target: signer_set.target,
         executor: ctx.accounts.executor.key(),
