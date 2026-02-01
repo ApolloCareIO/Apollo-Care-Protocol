@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::state::{ReinsuranceLayerType, TreatyStatus, RecoveryStatus};
+use crate::state::{ReinsuranceLayerType, TreatyStatus};
 
 // ============================================================================
 // CONFIGURATION EVENTS

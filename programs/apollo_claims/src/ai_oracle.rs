@@ -388,8 +388,8 @@ pub struct RegionalPriceFactor {
 /// Evaluate a claim and produce an AI decision
 /// This is the core logic that the off-chain oracle uses
 pub fn evaluate_claim_for_decision(
-    claim_amount: u64,
-    claim_category: u8,
+    _claim_amount: u64,
+    _claim_category: u8,
     member_tenure_days: u16,
     price_score: u16,      // From UCR comparison
     fraud_indicators: u8,   // Count of fraud flags

@@ -123,7 +123,7 @@ pub mod apollo_governance {
 /// Other programs use these functions to verify multisig approval
 pub mod authorization {
     use super::*;
-    use anchor_lang::solana_program::pubkey::Pubkey;
+    
 
     /// Seeds for DAO config PDA
     pub fn dao_config_seeds() -> &'static [&'static [u8]] {

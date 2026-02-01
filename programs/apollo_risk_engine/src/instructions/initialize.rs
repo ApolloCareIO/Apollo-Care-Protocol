@@ -2,7 +2,6 @@
 
 use anchor_lang::prelude::*;
 use crate::state::{RiskConfig, RatingTable, CarState, ZoneState, Zone, default_age_bands};
-use crate::errors::RiskEngineError;
 use crate::events::RiskEngineInitialized;
 
 #[derive(Accounts)]

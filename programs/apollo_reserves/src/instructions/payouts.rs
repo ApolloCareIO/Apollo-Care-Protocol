@@ -2,7 +2,7 @@
 
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount};
-use crate::state::{ReserveConfig, ReserveState, VaultAuthority, RunoffState, WaterfallSource};
+use crate::state::{ReserveConfig, ReserveState, VaultAuthority, RunoffState};
 use crate::errors::ReserveError;
 use crate::events::{ClaimPaidFromWaterfall, RunoffSpent, CoverageRatioChanged, ReserveSnapshot};
 

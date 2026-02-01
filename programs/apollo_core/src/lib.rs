@@ -14,8 +14,6 @@
 // Authority: 7jMC5SKBDmweVLst8YKTNP77wX7RpUpV6MvYVcfqswyt
 
 use anchor_lang::prelude::*;
-use anchor_spl::token_2022::{self, Token2022};
-use anchor_spl::token_interface::{Mint as MintInterface, TokenAccount as TokenAccountInterface};
 
 declare_id!("DHGQUHAXRvEiHA4J3JhxKdSLkqvyKPyZYaciLfMA5yok");
 
@@ -774,7 +772,7 @@ pub mod actuarial {
 // ($1.5M-$5M capital instead of $50M ICO assumption)
 
 pub mod bootstrap {
-    use super::*;
+    
     
     /// Maximum members in bootstrap phase (conservative for small capital)
     pub const BOOTSTRAP_MAX_MEMBERS: u32 = 200;
@@ -1119,7 +1117,7 @@ pub struct UpdateTransferFeeStatus<'info> {
 /// Helper functions for other programs to interact with APH Token-2022
 pub mod cpi_helpers {
     use super::*;
-    use anchor_spl::token_2022;
+    
     use anchor_spl::token_interface;
 
     /// Transfer APH tokens using Token-2022 program

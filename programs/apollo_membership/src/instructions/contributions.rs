@@ -2,7 +2,7 @@
 
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount};
-use crate::state::{GlobalConfig, MemberAccount, MemberStatus, ContributionLedger};
+use crate::state::{GlobalConfig, MemberAccount, ContributionLedger};
 use crate::errors::MembershipError;
 use crate::events::{ContributionDeposited, PersistencyDiscountApplied};
 

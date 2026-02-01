@@ -51,7 +51,7 @@ pub fn slash_position(
     ctx: Context<SlashPosition>,
     slash_amount: u64,
     target_usdc_value: u64,
-    reason: String,
+    _reason: String,
 ) -> Result<()> {
     let clock = Clock::get()?;
     let tier = &mut ctx.accounts.staking_tier;

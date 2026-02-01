@@ -9,7 +9,6 @@ use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{
     Mint as MintInterface, TokenAccount as TokenAccountInterface, TokenInterface,
 };
-use anchor_spl::associated_token::AssociatedToken;
 use apollo_core::aph_token;
 use crate::state::{StakingConfig, StakingTier, AphVault, LiquidationQueue, default_tier_configs};
 use crate::events::{StakingConfigInitialized, StakingTierCreated};

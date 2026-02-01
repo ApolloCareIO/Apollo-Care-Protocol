@@ -18,7 +18,7 @@ pub mod events;
 pub mod instructions;
 
 use instructions::*;
-use state::{AgeBand, RegionFactor, ContributionQuote, Zone};
+use state::{ContributionQuote, Zone};
 
 declare_id!("FdTXXgEMT1k5YghXxpe1etxDEBorJ7z1soPmkRQAW8mB");
 

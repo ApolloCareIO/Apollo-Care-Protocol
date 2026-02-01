@@ -20,7 +20,6 @@ pub mod instructions;
 pub mod ai_oracle;
 
 use instructions::*;
-use state::{ClaimCategory, AttestationRecommendation, CategoryLimit};
 
 declare_id!("J65pg6g7caJvSvfGBsuwzzYiyxR1EJePP1NGuaPqRK6C");
 

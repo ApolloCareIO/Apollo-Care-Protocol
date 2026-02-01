@@ -2,7 +2,6 @@
 
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Mint};
-use anchor_spl::associated_token::AssociatedToken;
 use crate::state::{ReserveConfig, VaultAuthority};
 use crate::errors::ReserveError;
 use crate::events::VaultsCreated;

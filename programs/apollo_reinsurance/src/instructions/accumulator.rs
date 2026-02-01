@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::state::{ReinsuranceConfig, ReinsuranceTreaty, MemberClaimsAccumulator, MonthlyAggregate, ReinsuranceLayerType, TreatyStatus};
+use crate::state::{ReinsuranceConfig, ReinsuranceTreaty, MemberClaimsAccumulator, MonthlyAggregate, ReinsuranceLayerType};
 use crate::errors::ReinsuranceError;
 use crate::events::*;
 

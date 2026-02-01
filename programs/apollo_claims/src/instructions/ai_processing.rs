@@ -8,7 +8,7 @@
 use anchor_lang::prelude::*;
 use crate::state::{ClaimsConfig, ClaimAccount, ClaimStatus, ClaimCategory};
 use crate::errors::ClaimsError;
-use crate::events::{ClaimSubmitted, ClaimStatusChanged};
+use crate::events::ClaimStatusChanged;
 
 // =============================================================================
 // AI ORACLE STATE
