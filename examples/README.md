@@ -1,5 +1,8 @@
 # Apollo Care Protocol Examples
 
+> ⚠️ **Status**: Examples require the `@apollocare/sdk` package and IDL files from deployed programs. 
+> These will work after devnet deployment.
+
 This directory contains example scripts demonstrating how to interact with the Apollo Care Protocol.
 
 ## Prerequisites

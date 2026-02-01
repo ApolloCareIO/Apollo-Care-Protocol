@@ -20,7 +20,7 @@
     <img src="https://img.shields.io/badge/Solana-Mainnet-9945FF?logo=solana&logoColor=white" alt="Solana"/>
   </a>
   <a href="https://www.anchor-lang.com/">
-    <img src="https://img.shields.io/badge/Anchor-0.30.1-ff69b4" alt="Anchor"/>
+    <img src="https://img.shields.io/badge/Anchor-0.29.0-ff69b4" alt="Anchor"/>
   </a>
   <a href="https://github.com/ApolloCareIO/apollo-care-protocol/stargazers">
     <img src="https://img.shields.io/github/stars/ApolloCareIO/apollo-care-protocol?style=social" alt="Stars"/>
@@ -223,16 +223,22 @@ anchor deploy --provider.cluster devnet
 
 ```
 apollo-care-protocol/
-├── programs/
-│   ├── apollo_governance/    # DAO & committee governance
+├── programs/                 # Anchor/Solana programs
+│   ├── apollo_core/          # Shared constants & APH token
+│   ├── apollo_membership/    # Member enrollment & contributions
+│   ├── apollo_reserves/      # USDC reserve tiers & payouts
+│   ├── apollo_risk_engine/   # Actuarial pricing & CAR zones
+│   ├── apollo_claims/        # Claims processing & AI oracle
+│   ├── apollo_reinsurance/   # Reinsurance pools & recovery
 │   ├── apollo_staking/       # APH staking mechanics
-│   ├── apollo_reserves/      # USDC reserve management
-│   ├── apollo_risk_engine/   # Actuarial pricing & CAR
-│   ├── apollo_claims/        # Claims processing
-│   └── apollo_membership/    # Member lifecycle
-├── tests/                    # Integration tests
-├── migrations/               # Deployment scripts
-└── sdk/                      # TypeScript SDK
+│   └── apollo_governance/    # DAO & committee governance
+├── docs/                     # Documentation
+│   ├── BOOTSTRAP_GUIDE.md    # Bootstrap scale operations
+│   ├── DESIGN_NOTES.md       # Actuarial & AI architecture
+│   └── TOKEN.md              # APH Token-2022 details
+├── sdk/                      # TypeScript SDK (requires IDLs)
+├── examples/                 # Usage examples
+└── tests/                    # Integration tests
 ```
 
 ---

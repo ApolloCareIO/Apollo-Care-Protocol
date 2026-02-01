@@ -2,6 +2,10 @@
 
 TypeScript SDK for interacting with Apollo Care Protocol on Solana.
 
+> ⚠️ **Status**: This SDK requires IDL files to be generated from the Anchor programs. 
+> IDLs will be available after devnet deployment. The types, constants, and utilities 
+> are ready to use.
+
 ## Installation
 
 ```bash
