@@ -73,14 +73,14 @@ jobs:
         run: anchor build
 
       - name: Upload IDLs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: idl-artifacts
           path: target/idl/
           retention-days: 7
 
       - name: Upload program binaries
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: program-binaries
           path: target/deploy/*.so
