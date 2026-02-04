@@ -1,2 +1,5 @@
+# Rust Toolchain Configuration for Apollo Care Protocol
+# Using stable channel for production builds
+
 [toolchain]
 channel = "stable"

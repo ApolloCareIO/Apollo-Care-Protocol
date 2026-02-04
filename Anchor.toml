@@ -1,5 +1,7 @@
 # Anchor.toml - Apollo Care Protocol Configuration
 
+# Anchor CLI version - must match workspace dependencies
+# Using 0.29.0 for compatibility with solana-program 1.18
 [toolchain]
 anchor_version = "0.29.0"
 

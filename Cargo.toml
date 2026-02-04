@@ -21,7 +21,9 @@ repository = "https://github.com/apollocare/apollo-care-protocol"
 authors = ["Apollo Care Team <dev@apollocare.io>"]
 
 [workspace.dependencies]
-# Using Anchor 0.29.0 for compatibility
+# Using Anchor 0.29.0 for Solana 1.18 compatibility
+# Note: 0.30+ requires Rust nightly/edition2024 for some deps
+# Reference: https://solana.com/docs/core/programs
 anchor-lang = { version = "0.29.0", features = ["init-if-needed"] }
 anchor-spl = "0.29.0"
 solana-program = "1.18"
