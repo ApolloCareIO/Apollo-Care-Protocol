@@ -23,7 +23,7 @@
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.12.0",
     "anchor-bankrun": "^0.4.0",
-    "chai": "^4.4.1",
+    "chai": "^6.2.2",
     "mocha": "^10.4.0",
     "prettier": "^3.2.5",
     "solana-bankrun": "^0.3.0",
