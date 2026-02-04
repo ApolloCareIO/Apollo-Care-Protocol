@@ -1,60 +1,60 @@
 # Dependabot Configuration
 # Automated dependency updates for Apollo Care Protocol
-# 
-# NOTE: Dependency updates paused until CI is stable.
-# Re-enable by changing interval from "monthly" to "weekly"
 
 version: 2
 updates:
-  # Rust/Cargo dependencies - PAUSED (Anchor versions are pinned)
+  # Rust/Cargo dependencies
   - package-ecosystem: "cargo"
     directory: "/"
     schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 2
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(deps)"
     labels:
       - "dependencies"
       - "rust"
-    ignore:
-      # Anchor versions must stay pinned to 0.29.0 for compatibility
-      - dependency-name: "anchor-*"
-      - dependency-name: "solana-*"
+    groups:
+      anchor:
+        patterns:
+          - "anchor-*"
+      solana:
+        patterns:
+          - "solana-*"
+          - "spl-*"
 
-  # NPM dependencies (tests, SDK) - PAUSED
+  # NPM dependencies (tests, SDK)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 2
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
     commit-message:
       prefix: "chore(deps)"
     labels:
       - "dependencies"
       - "javascript"
-    ignore:
-      # Anchor JS SDK must match Rust version
-      - dependency-name: "@coral-xyz/anchor"
 
-  # SDK dependencies - PAUSED
+  # SDK dependencies
   - package-ecosystem: "npm"
     directory: "/sdk"
     schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 2
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
     commit-message:
       prefix: "chore(deps-sdk)"
     labels:
       - "dependencies"
       - "sdk"
 
-  # GitHub Actions - Keep updated for security
+  # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 3
+      interval: "weekly"
     commit-message:
       prefix: "chore(ci)"
     labels:
