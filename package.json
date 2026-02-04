@@ -21,7 +21,7 @@
     "@types/bn.js": "^5.1.5",
     "@types/chai": "^4.3.16",
     "@types/mocha": "^10.0.6",
-    "@types/node": "^20.12.0",
+    "@types/node": "^25.2.0",
     "anchor-bankrun": "^0.4.0",
     "chai": "^4.4.1",
     "mocha": "^10.4.0",
