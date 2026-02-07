@@ -1,7 +1,7 @@
 // programs/apollo_membership/src/events.rs
 
-use anchor_lang::prelude::*;
 use crate::state::{MemberStatus, QualifyingEvent};
+use anchor_lang::prelude::*;
 
 /// Emitted when global config is initialized
 #[event]

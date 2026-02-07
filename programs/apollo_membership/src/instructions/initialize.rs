@@ -1,9 +1,9 @@
 // programs/apollo_membership/src/instructions/initialize.rs
 
+use crate::events::GlobalConfigInitialized;
+use crate::state::GlobalConfig;
 use anchor_lang::prelude::*;
 use anchor_spl::token::Mint;
-use crate::state::GlobalConfig;
-use crate::events::GlobalConfigInitialized;
 
 #[derive(Accounts)]
 pub struct InitializeGlobalConfig<'info> {
@@ -33,7 +33,10 @@ pub struct InitializeGlobalConfigParams {
     pub preexisting_waiting_days: Option<u16>,
 }
 
-pub fn handler(ctx: Context<InitializeGlobalConfig>, params: InitializeGlobalConfigParams) -> Result<()> {
+pub fn handler(
+    ctx: Context<InitializeGlobalConfig>,
+    params: InitializeGlobalConfigParams,
+) -> Result<()> {
     let clock = Clock::get()?;
 
     let config = &mut ctx.accounts.global_config;
@@ -45,9 +48,11 @@ pub fn handler(ctx: Context<InitializeGlobalConfig>, params: InitializeGlobalCon
     config.total_members = 0;
     config.active_members = 0;
     config.total_contributions = 0;
-    config.default_waiting_period_days = params.default_waiting_period_days
+    config.default_waiting_period_days = params
+        .default_waiting_period_days
         .unwrap_or(GlobalConfig::DEFAULT_WAITING_PERIOD);
-    config.preexisting_waiting_days = params.preexisting_waiting_days
+    config.preexisting_waiting_days = params
+        .preexisting_waiting_days
         .unwrap_or(GlobalConfig::DEFAULT_PREEXISTING_WAIT);
     config.persistency_discount_start_months = GlobalConfig::DEFAULT_PERSISTENCY_START;
     config.persistency_discount_bps = GlobalConfig::DEFAULT_PERSISTENCY_BPS;

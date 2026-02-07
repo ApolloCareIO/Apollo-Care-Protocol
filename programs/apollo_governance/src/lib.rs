@@ -8,10 +8,10 @@
 
 use anchor_lang::prelude::*;
 
-pub mod state;
 pub mod errors;
 pub mod events;
 pub mod instructions;
+pub mod state;
 
 use instructions::*;
 use state::{AdminAction, CommitteeType};
@@ -33,7 +33,10 @@ pub mod apollo_governance {
     // ==================== MULTISIG MANAGEMENT ====================
 
     /// Create a new multisig for a committee or special purpose
-    pub fn create_multisig(ctx: Context<CreateMultisig>, params: CreateMultisigParams) -> Result<()> {
+    pub fn create_multisig(
+        ctx: Context<CreateMultisig>,
+        params: CreateMultisigParams,
+    ) -> Result<()> {
         instructions::multisig::create_multisig(ctx, params)
     }
 
@@ -55,7 +58,10 @@ pub mod apollo_governance {
     // ==================== ACTION AUTHORIZATION ====================
 
     /// Create a signer set for a pending multisig action
-    pub fn create_signer_set(ctx: Context<CreateSignerSet>, params: CreateSignerSetParams) -> Result<()> {
+    pub fn create_signer_set(
+        ctx: Context<CreateSignerSet>,
+        params: CreateSignerSetParams,
+    ) -> Result<()> {
         instructions::multisig::create_signer_set(ctx, params)
     }
 
@@ -103,7 +109,7 @@ pub mod apollo_governance {
     pub fn update_committee(
         ctx: Context<UpdateCommittee>,
         committee_type: CommitteeType,
-        new_address: Pubkey
+        new_address: Pubkey,
     ) -> Result<()> {
         instructions::emergency::update_committee(ctx, committee_type, new_address)
     }
@@ -114,7 +120,10 @@ pub mod apollo_governance {
     }
 
     /// Update the maximum emergency duration
-    pub fn update_emergency_duration(ctx: Context<UpdateEmergencyDuration>, new_duration: i64) -> Result<()> {
+    pub fn update_emergency_duration(
+        ctx: Context<UpdateEmergencyDuration>,
+        new_duration: i64,
+    ) -> Result<()> {
         instructions::emergency::update_emergency_duration(ctx, new_duration)
     }
 }
@@ -123,7 +132,6 @@ pub mod apollo_governance {
 /// Other programs use these functions to verify multisig approval
 pub mod authorization {
     use super::*;
-    
 
     /// Seeds for DAO config PDA
     pub fn dao_config_seeds() -> &'static [&'static [u8]] {

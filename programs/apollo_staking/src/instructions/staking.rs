@@ -5,14 +5,14 @@
 // Uses token_interface for Token-2022 compatibility with APH token.
 // Handles transfer fee extension awareness.
 
-use anchor_lang::prelude::*;
-use anchor_spl::token_interface::{
-    self, Mint as MintInterface, TokenAccount as TokenAccountInterface,
-    TokenInterface, TransferChecked,
-};
-use crate::state::{StakingConfig, StakingTier, StakePosition, StakerAccount, AphVault};
 use crate::errors::StakingError;
 use crate::events::{Staked, Unstaked};
+use crate::state::{AphVault, StakePosition, StakerAccount, StakingConfig, StakingTier};
+use anchor_lang::prelude::*;
+use anchor_spl::token_interface::{
+    self, Mint as MintInterface, TokenAccount as TokenAccountInterface, TokenInterface,
+    TransferChecked,
+};
 
 // =============================================================================
 // STAKE APH TOKENS
@@ -267,17 +267,16 @@ pub fn unstake(ctx: Context<Unstake>) -> Result<()> {
     );
 
     let effective_amount = position.effective_stake();
-    let rewards = position.rewards_earned.saturating_sub(position.rewards_claimed);
+    let rewards = position
+        .rewards_earned
+        .saturating_sub(position.rewards_claimed);
     let total_withdrawal = effective_amount.saturating_add(rewards);
 
     // Get decimals for transfer_checked
     let decimals = ctx.accounts.aph_mint.decimals;
 
     // Transfer APH back to staker using vault authority PDA
-    let vault_seeds = &[
-        AphVault::SEED_PREFIX,
-        &[ctx.accounts.aph_vault.bump],
-    ];
+    let vault_seeds = &[AphVault::SEED_PREFIX, &[ctx.accounts.aph_vault.bump]];
     let signer_seeds = &[&vault_seeds[..]];
 
     token_interface::transfer_checked(
@@ -306,10 +305,15 @@ pub fn unstake(ctx: Context<Unstake>) -> Result<()> {
     position.rewards_claimed = position.rewards_earned;
 
     // Update staker account
-    staker_account.total_staked = staker_account.total_staked.saturating_sub(position.original_amount);
+    staker_account.total_staked = staker_account
+        .total_staked
+        .saturating_sub(position.original_amount);
     staker_account.active_positions = staker_account.active_positions.saturating_sub(1);
-    staker_account.total_rewards_claimed = staker_account.total_rewards_claimed.saturating_add(rewards);
-    staker_account.voting_power = staker_account.voting_power.saturating_sub(position.original_amount);
+    staker_account.total_rewards_claimed =
+        staker_account.total_rewards_claimed.saturating_add(rewards);
+    staker_account.voting_power = staker_account
+        .voting_power
+        .saturating_sub(position.original_amount);
 
     // Update tier
     tier.total_staked = tier.total_staked.saturating_sub(position.original_amount);
@@ -429,10 +433,7 @@ pub fn emergency_unstake(ctx: Context<EmergencyUnstake>) -> Result<()> {
     let decimals = ctx.accounts.aph_mint.decimals;
 
     // Transfer APH back to staker (minus fee)
-    let vault_seeds = &[
-        AphVault::SEED_PREFIX,
-        &[ctx.accounts.aph_vault.bump],
-    ];
+    let vault_seeds = &[AphVault::SEED_PREFIX, &[ctx.accounts.aph_vault.bump]];
     let signer_seeds = &[&vault_seeds[..]];
 
     token_interface::transfer_checked(
@@ -460,9 +461,13 @@ pub fn emergency_unstake(ctx: Context<EmergencyUnstake>) -> Result<()> {
     position.is_active = false;
 
     // Update staker account
-    staker_account.total_staked = staker_account.total_staked.saturating_sub(position.original_amount);
+    staker_account.total_staked = staker_account
+        .total_staked
+        .saturating_sub(position.original_amount);
     staker_account.active_positions = staker_account.active_positions.saturating_sub(1);
-    staker_account.voting_power = staker_account.voting_power.saturating_sub(position.original_amount);
+    staker_account.voting_power = staker_account
+        .voting_power
+        .saturating_sub(position.original_amount);
 
     // Update tier - fee stays in rewards pool
     tier.total_staked = tier.total_staked.saturating_sub(position.original_amount);

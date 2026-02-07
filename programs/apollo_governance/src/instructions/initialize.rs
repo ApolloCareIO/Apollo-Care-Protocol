@@ -1,8 +1,8 @@
 // programs/apollo_governance/src/instructions/initialize.rs
 
-use anchor_lang::prelude::*;
-use crate::state::DaoConfig;
 use crate::events::DaoInitialized;
+use crate::state::DaoConfig;
+use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 pub struct InitializeDao<'info> {

@@ -1,12 +1,12 @@
 // programs/apollo_claims/src/instructions/attestation.rs
 
-use anchor_lang::prelude::*;
-use crate::state::{
-    ClaimsConfig, ClaimAccount, ClaimStatus,
-    AttestorRegistry, Attestation, AttestationRecommendation
-};
 use crate::errors::ClaimsError;
 use crate::events::ClaimAttested;
+use crate::state::{
+    Attestation, AttestationRecommendation, AttestorRegistry, ClaimAccount, ClaimStatus,
+    ClaimsConfig,
+};
+use anchor_lang::prelude::*;
 
 /// Attest a claim (committee member review)
 #[derive(Accounts)]

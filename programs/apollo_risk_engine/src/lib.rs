@@ -12,10 +12,10 @@
 
 use anchor_lang::prelude::*;
 
-pub mod state;
 pub mod errors;
 pub mod events;
 pub mod instructions;
+pub mod state;
 
 use instructions::*;
 use state::{ContributionQuote, Zone};
@@ -124,7 +124,10 @@ pub mod apollo_risk_engine {
     }
 
     /// Toggle enrollment freeze
-    pub fn toggle_enrollment_freeze(ctx: Context<ToggleEnrollmentFreeze>, freeze: bool) -> Result<()> {
+    pub fn toggle_enrollment_freeze(
+        ctx: Context<ToggleEnrollmentFreeze>,
+        freeze: bool,
+    ) -> Result<()> {
         instructions::zones::toggle_enrollment_freeze(ctx, freeze)
     }
 

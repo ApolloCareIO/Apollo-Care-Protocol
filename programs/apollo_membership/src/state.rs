@@ -190,10 +190,10 @@ impl EnrollmentWindow {
     pub const SEED_PREFIX: &'static [u8] = b"enrollment_window";
 
     pub fn is_open(&self, current_time: i64) -> bool {
-        self.is_active &&
-        current_time >= self.start_time &&
-        current_time <= self.end_time &&
-        self.enrollment_count < self.max_enrollments
+        self.is_active
+            && current_time >= self.start_time
+            && current_time <= self.end_time
+            && self.enrollment_count < self.max_enrollments
     }
 }
 

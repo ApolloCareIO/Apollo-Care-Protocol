@@ -1,10 +1,10 @@
 // programs/apollo_reserves/src/instructions/payouts.rs
 
+use crate::errors::ReserveError;
+use crate::events::{ClaimPaidFromWaterfall, CoverageRatioChanged, ReserveSnapshot, RunoffSpent};
+use crate::state::{ReserveConfig, ReserveState, RunoffState, VaultAuthority};
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount};
-use crate::state::{ReserveConfig, ReserveState, VaultAuthority, RunoffState};
-use crate::errors::ReserveError;
-use crate::events::{ClaimPaidFromWaterfall, RunoffSpent, CoverageRatioChanged, ReserveSnapshot};
 
 /// Pay a claim using the waterfall mechanism
 /// Order: Tier0 -> Tier1 -> Tier2 -> (Staked APH via separate instruction)
@@ -67,7 +67,10 @@ pub struct PayoutParams {
     pub amount: u64,
 }
 
-pub fn payout_claim_from_waterfall(ctx: Context<PayoutClaimFromWaterfall>, params: PayoutParams) -> Result<()> {
+pub fn payout_claim_from_waterfall(
+    ctx: Context<PayoutClaimFromWaterfall>,
+    params: PayoutParams,
+) -> Result<()> {
     let clock = Clock::get()?;
     let state = &mut ctx.accounts.reserve_state;
 
@@ -79,10 +82,7 @@ pub fn payout_claim_from_waterfall(ctx: Context<PayoutClaimFromWaterfall>, param
     let mut from_tier2: u64 = 0;
 
     let vault_authority = &ctx.accounts.vault_authority;
-    let seeds = &[
-        VaultAuthority::SEED_PREFIX,
-        &[vault_authority.bump],
-    ];
+    let seeds = &[VaultAuthority::SEED_PREFIX, &[vault_authority.bump]];
     let signer_seeds = &[&seeds[..]];
 
     // Waterfall: Tier0 first

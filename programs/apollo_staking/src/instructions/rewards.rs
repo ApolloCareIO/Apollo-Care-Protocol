@@ -4,14 +4,14 @@
 // ============================================
 // Reward computation, claiming, and pool funding using Token-2022.
 
-use anchor_lang::prelude::*;
-use anchor_spl::token_interface::{
-    self, Mint as MintInterface, TokenAccount as TokenAccountInterface,
-    TokenInterface, TransferChecked,
-};
-use crate::state::{StakingConfig, StakingTier, StakePosition, StakerAccount, AphVault};
 use crate::errors::StakingError;
 use crate::events::{RewardsClaimed, RewardsComputed, RewardsPoolFunded, TierApyUpdated};
+use crate::state::{AphVault, StakePosition, StakerAccount, StakingConfig, StakingTier};
+use anchor_lang::prelude::*;
+use anchor_spl::token_interface::{
+    self, Mint as MintInterface, TokenAccount as TokenAccountInterface, TokenInterface,
+    TransferChecked,
+};
 
 // =============================================================================
 // COMPUTE REWARDS
@@ -85,7 +85,8 @@ pub fn compute_rewards(ctx: Context<ComputeRewards>) -> Result<()> {
     position.rewards_earned = position.rewards_earned.saturating_add(rewards);
     position.last_reward_at = clock.unix_timestamp;
 
-    staker_account.total_rewards_earned = staker_account.total_rewards_earned.saturating_add(rewards);
+    staker_account.total_rewards_earned =
+        staker_account.total_rewards_earned.saturating_add(rewards);
 
     emit!(RewardsComputed {
         staker: position.staker,
@@ -176,25 +177,27 @@ pub fn claim_rewards(ctx: Context<ClaimRewards>) -> Result<()> {
     let clock = Clock::get()?;
     // Get account infos before mutable borrows
     let vault_account_info = ctx.accounts.aph_vault.to_account_info();
-    
+
     let position = &mut ctx.accounts.stake_position;
     let tier = &mut ctx.accounts.staking_tier;
     let vault = &mut ctx.accounts.aph_vault;
     let staker_account = &mut ctx.accounts.staker_account;
     let config = &mut ctx.accounts.staking_config;
 
-    let claimable = position.rewards_earned.saturating_sub(position.rewards_claimed);
+    let claimable = position
+        .rewards_earned
+        .saturating_sub(position.rewards_claimed);
     require!(claimable > 0, StakingError::NoRewardsToClaim);
-    require!(tier.rewards_pool >= claimable, StakingError::InsufficientRewardsPool);
+    require!(
+        tier.rewards_pool >= claimable,
+        StakingError::InsufficientRewardsPool
+    );
 
     // Get decimals for transfer_checked
     let decimals = ctx.accounts.aph_mint.decimals;
 
     // Transfer rewards from vault to staker using Token-2022
-    let vault_seeds = &[
-        AphVault::SEED_PREFIX,
-        &[vault.bump],
-    ];
+    let vault_seeds = &[AphVault::SEED_PREFIX, &[vault.bump]];
     let signer_seeds = &[&vault_seeds[..]];
 
     token_interface::transfer_checked(
@@ -214,7 +217,9 @@ pub fn claim_rewards(ctx: Context<ClaimRewards>) -> Result<()> {
 
     // Update state
     position.rewards_claimed = position.rewards_earned;
-    staker_account.total_rewards_claimed = staker_account.total_rewards_claimed.saturating_add(claimable);
+    staker_account.total_rewards_claimed = staker_account
+        .total_rewards_claimed
+        .saturating_add(claimable);
     tier.rewards_pool = tier.rewards_pool.saturating_sub(claimable);
     vault.rewards_available = vault.rewards_available.saturating_sub(claimable);
     vault.total_aph = vault.total_aph.saturating_sub(claimable);

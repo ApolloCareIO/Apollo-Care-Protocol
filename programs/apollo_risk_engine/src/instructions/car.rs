@@ -1,9 +1,9 @@
 // programs/apollo_risk_engine/src/instructions/car.rs
 
-use anchor_lang::prelude::*;
-use crate::state::{RiskConfig, CarState, ZoneState, Zone};
 use crate::errors::RiskEngineError;
 use crate::events::{CarStateUpdated, ZoneTransition};
+use crate::state::{CarState, RiskConfig, Zone, ZoneState};
+use anchor_lang::prelude::*;
 
 /// Update CAR state with latest data
 #[derive(Accounts)]
@@ -226,7 +226,10 @@ pub fn set_car_thresholds(
     }
 
     if let Some(min) = min_car_bps {
-        require!(min >= 5000 && min < car_state.target_car_bps, RiskEngineError::InvalidBasisPoints);
+        require!(
+            min >= 5000 && min < car_state.target_car_bps,
+            RiskEngineError::InvalidBasisPoints
+        );
         car_state.min_car_bps = min;
     }
 

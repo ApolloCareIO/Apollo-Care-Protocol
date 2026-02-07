@@ -13,11 +13,11 @@
 
 use anchor_lang::prelude::*;
 
-pub mod state;
+pub mod ai_oracle;
 pub mod errors;
 pub mod events;
 pub mod instructions;
-pub mod ai_oracle;
+pub mod state;
 
 use instructions::*;
 
@@ -98,12 +98,19 @@ pub mod apollo_claims {
     }
 
     /// Process fast-lane auto-approval (small routine claims)
-    pub fn process_fast_lane(ctx: Context<ProcessFastLane>, claim_id: u64, month_start: i64) -> Result<()> {
+    pub fn process_fast_lane(
+        ctx: Context<ProcessFastLane>,
+        claim_id: u64,
+        month_start: i64,
+    ) -> Result<()> {
         instructions::ai_processing::process_fast_lane(ctx, claim_id, month_start)
     }
 
     /// Mark AI decision as overturned (for accuracy tracking)
-    pub fn mark_decision_overturned(ctx: Context<MarkDecisionOverturned>, claim_id: u64) -> Result<()> {
+    pub fn mark_decision_overturned(
+        ctx: Context<MarkDecisionOverturned>,
+        claim_id: u64,
+    ) -> Result<()> {
         instructions::ai_processing::mark_decision_overturned(ctx, claim_id)
     }
 

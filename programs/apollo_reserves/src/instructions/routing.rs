@@ -1,10 +1,10 @@
 // programs/apollo_reserves/src/instructions/routing.rs
 
-use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Token, TokenAccount};
-use crate::state::{ReserveConfig, ReserveState, VaultAuthority, ContributionRouting};
 use crate::errors::ReserveError;
 use crate::events::ContributionRouted;
+use crate::state::{ContributionRouting, ReserveConfig, ReserveState, VaultAuthority};
+use anchor_lang::prelude::*;
+use anchor_spl::token::{self, Token, TokenAccount};
 
 /// Route a contribution to appropriate vaults based on reserve policy
 #[derive(Accounts)]
@@ -77,7 +77,8 @@ pub fn route_contribution(ctx: Context<RouteContribution>, total_amount: u64) ->
     let routing = calculate_routing(config, state, total_amount)?;
 
     // Verify total matches
-    let sum = routing.to_tier0
+    let sum = routing
+        .to_tier0
         .saturating_add(routing.to_tier1)
         .saturating_add(routing.to_tier2)
         .saturating_add(routing.to_admin);
@@ -148,7 +149,8 @@ pub fn route_contribution(ctx: Context<RouteContribution>, total_amount: u64) ->
     }
 
     // Update total contributions
-    state.total_contributions_received = state.total_contributions_received
+    state.total_contributions_received = state
+        .total_contributions_received
         .saturating_add(total_amount);
 
     emit!(ContributionRouted {
@@ -171,9 +173,11 @@ fn calculate_routing(
     total: u64,
 ) -> Result<ContributionRouting> {
     // Calculate targets
-    let tier0_target = state.expected_daily_claims
+    let tier0_target = state
+        .expected_daily_claims
         .saturating_mul(config.tier0_target_days as u64);
-    let tier1_target = state.expected_daily_claims
+    let tier1_target = state
+        .expected_daily_claims
         .saturating_mul(config.tier1_target_days as u64)
         .saturating_add(state.ibnr_usdc);
 
@@ -204,13 +208,11 @@ fn calculate_routing(
         (0, remaining_after_loads)
     };
 
-    let to_tier1 = reserve_margin.saturating_add(
-        if tier1_deficit > 0 {
-            leftover_after_tier0.min(tier1_deficit)
-        } else {
-            0
-        }
-    );
+    let to_tier1 = reserve_margin.saturating_add(if tier1_deficit > 0 {
+        leftover_after_tier0.min(tier1_deficit)
+    } else {
+        0
+    });
 
     let to_tier2 = total
         .saturating_sub(to_tier0)

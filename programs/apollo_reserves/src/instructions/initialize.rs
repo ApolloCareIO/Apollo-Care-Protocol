@@ -1,9 +1,9 @@
 // programs/apollo_reserves/src/instructions/initialize.rs
 
-use anchor_lang::prelude::*;
-use crate::state::{ReserveConfig, ReserveState, RunoffState, IbnrParams};
 use crate::errors::ReserveError;
 use crate::events::ReservesInitialized;
+use crate::state::{IbnrParams, ReserveConfig, ReserveState, RunoffState};
+use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 pub struct InitializeReserves<'info> {
@@ -68,11 +68,21 @@ pub fn handler(ctx: Context<InitializeReserves>, params: InitializeReservesParam
     let clock = Clock::get()?;
 
     // Validate parameters
-    let tier0_days = params.tier0_target_days.unwrap_or(ReserveConfig::DEFAULT_TIER0_DAYS);
-    let tier1_days = params.tier1_target_days.unwrap_or(ReserveConfig::DEFAULT_TIER1_DAYS);
-    let tier2_days = params.tier2_target_days.unwrap_or(ReserveConfig::DEFAULT_TIER2_DAYS);
-    let reserve_margin = params.reserve_margin_bps.unwrap_or(ReserveConfig::DEFAULT_RESERVE_MARGIN_BPS);
-    let admin_load = params.admin_load_bps.unwrap_or(ReserveConfig::DEFAULT_ADMIN_LOAD_BPS);
+    let tier0_days = params
+        .tier0_target_days
+        .unwrap_or(ReserveConfig::DEFAULT_TIER0_DAYS);
+    let tier1_days = params
+        .tier1_target_days
+        .unwrap_or(ReserveConfig::DEFAULT_TIER1_DAYS);
+    let tier2_days = params
+        .tier2_target_days
+        .unwrap_or(ReserveConfig::DEFAULT_TIER2_DAYS);
+    let reserve_margin = params
+        .reserve_margin_bps
+        .unwrap_or(ReserveConfig::DEFAULT_RESERVE_MARGIN_BPS);
+    let admin_load = params
+        .admin_load_bps
+        .unwrap_or(ReserveConfig::DEFAULT_ADMIN_LOAD_BPS);
 
     require!(tier0_days > 0, ReserveError::InvalidTargetDays);
     require!(tier1_days > tier0_days, ReserveError::InvalidTargetDays);
@@ -173,7 +183,10 @@ pub struct SetReserveTargetsParams {
     pub target_coverage_ratio_bps: Option<u16>,
 }
 
-pub fn set_reserve_targets(ctx: Context<SetReserveTargets>, params: SetReserveTargetsParams) -> Result<()> {
+pub fn set_reserve_targets(
+    ctx: Context<SetReserveTargets>,
+    params: SetReserveTargetsParams,
+) -> Result<()> {
     let config = &mut ctx.accounts.reserve_config;
     let clock = Clock::get()?;
 
@@ -186,19 +199,31 @@ pub fn set_reserve_targets(ctx: Context<SetReserveTargets>, params: SetReserveTa
         config.tier0_target_days = t0;
     }
     if let Some(t1) = params.tier1_target_days {
-        require!(t1 > config.tier0_target_days, ReserveError::InvalidTargetDays);
+        require!(
+            t1 > config.tier0_target_days,
+            ReserveError::InvalidTargetDays
+        );
         config.tier1_target_days = t1;
     }
     if let Some(t2) = params.tier2_target_days {
-        require!(t2 > config.tier1_target_days, ReserveError::InvalidTargetDays);
+        require!(
+            t2 > config.tier1_target_days,
+            ReserveError::InvalidTargetDays
+        );
         config.tier2_target_days = t2;
     }
     if let Some(min) = params.min_coverage_ratio_bps {
-        require!(min >= 5000 && min <= 20000, ReserveError::InvalidBasisPoints);
+        require!(
+            min >= 5000 && min <= 20000,
+            ReserveError::InvalidBasisPoints
+        );
         config.min_coverage_ratio_bps = min;
     }
     if let Some(target) = params.target_coverage_ratio_bps {
-        require!(target > config.min_coverage_ratio_bps, ReserveError::InvalidBasisPoints);
+        require!(
+            target > config.min_coverage_ratio_bps,
+            ReserveError::InvalidBasisPoints
+        );
         config.target_coverage_ratio_bps = target;
     }
 

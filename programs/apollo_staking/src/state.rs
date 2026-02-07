@@ -114,25 +114,25 @@ pub fn default_tier_configs() -> Vec<TierConfig> {
         TierConfig {
             tier_id: StakingTier::CONSERVATIVE,
             name: "Conservative".to_string(),
-            min_apy_bps: 300,   // 3%
-            max_apy_bps: 500,   // 5%
-            max_loss_bps: 200,  // 2%
+            min_apy_bps: 300,               // 3%
+            max_apy_bps: 500,               // 5%
+            max_loss_bps: 200,              // 2%
             lock_period: 30 * 24 * 60 * 60, // 30 days
         },
         TierConfig {
             tier_id: StakingTier::STANDARD,
             name: "Standard".to_string(),
-            min_apy_bps: 600,   // 6%
-            max_apy_bps: 800,   // 8%
-            max_loss_bps: 500,  // 5%
+            min_apy_bps: 600,               // 6%
+            max_apy_bps: 800,               // 8%
+            max_loss_bps: 500,              // 5%
             lock_period: 90 * 24 * 60 * 60, // 90 days
         },
         TierConfig {
             tier_id: StakingTier::AGGRESSIVE,
             name: "Aggressive".to_string(),
-            min_apy_bps: 1000,  // 10%
-            max_apy_bps: 1500,  // 15%
-            max_loss_bps: 1000, // 10%
+            min_apy_bps: 1000,               // 10%
+            max_apy_bps: 1500,               // 15%
+            max_loss_bps: 1000,              // 10%
             lock_period: 180 * 24 * 60 * 60, // 180 days
         },
     ]

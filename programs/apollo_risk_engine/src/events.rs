@@ -1,7 +1,7 @@
 // programs/apollo_risk_engine/src/events.rs
 
-use anchor_lang::prelude::*;
 use crate::state::Zone;
+use anchor_lang::prelude::*;
 
 /// Emitted when risk engine is initialized
 #[event]

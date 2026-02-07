@@ -81,52 +81,52 @@ pub enum ReservesError {
 
     #[msg("Development factor must be >= 10000 (1.0)")]
     InvalidDevFactor,
-    
+
     // Phase Management Errors
     #[msg("Invalid phase transition - must be sequential")]
     InvalidPhaseTransition,
-    
+
     #[msg("Invalid phase for this operation")]
     InvalidPhase,
-    
+
     #[msg("Phase transition already pending")]
     TransitionAlreadyPending,
-    
+
     #[msg("No phase transition pending")]
     NoTransitionPending,
-    
+
     #[msg("Phase requirements not met")]
     PhaseRequirementsNotMet,
-    
+
     #[msg("Smart contract or financial audit not complete")]
     AuditNotComplete,
-    
+
     #[msg("Regulatory approval required for this transition")]
     RegulatoryApprovalRequired,
-    
+
     #[msg("Insufficient capital for regulatory requirements")]
     InsufficientCapital,
-    
+
     #[msg("Actuarial certification required")]
     CertificationRequired,
-    
+
     #[msg("Required committees not established")]
     CommitteesRequired,
-    
+
     // Reinsurance Errors
     #[msg("Reinsurance is inactive")]
     ReinsuranceInactive,
-    
+
     #[msg("Reinsurance policy expired")]
     ReinsurancePolicyExpired,
-    
+
     #[msg("Invalid reinsurance configuration")]
     InvalidReinsuranceConfig,
-    
+
     // Cohort Errors
     #[msg("Cohort not found")]
     CohortNotFound,
-    
+
     #[msg("Cohort flagged for adverse selection")]
     CohortFlagged,
 }

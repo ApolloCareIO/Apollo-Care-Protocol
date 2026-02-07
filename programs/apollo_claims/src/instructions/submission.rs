@@ -1,9 +1,9 @@
 // programs/apollo_claims/src/instructions/submission.rs
 
-use anchor_lang::prelude::*;
-use crate::state::{ClaimsConfig, ClaimAccount, ClaimStatus, ClaimCategory};
 use crate::errors::ClaimsError;
-use crate::events::{ClaimSubmitted, ClaimCancelled};
+use crate::events::{ClaimCancelled, ClaimSubmitted};
+use crate::state::{ClaimAccount, ClaimCategory, ClaimStatus, ClaimsConfig};
+use anchor_lang::prelude::*;
 
 /// Submit a new claim
 #[derive(Accounts)]
@@ -47,7 +47,10 @@ pub fn submit_claim(ctx: Context<SubmitClaim>, params: SubmitClaimParams) -> Res
     let config = &mut ctx.accounts.claims_config;
 
     require!(params.requested_amount > 0, ClaimsError::InvalidClaimAmount);
-    require!(params.service_date <= clock.unix_timestamp, ClaimsError::InvalidServiceDate);
+    require!(
+        params.service_date <= clock.unix_timestamp,
+        ClaimsError::InvalidServiceDate
+    );
 
     let is_shock = params.requested_amount >= config.shock_claim_threshold;
 

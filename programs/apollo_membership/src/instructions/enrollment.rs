@@ -1,9 +1,14 @@
 // programs/apollo_membership/src/instructions/enrollment.rs
 
-use anchor_lang::prelude::*;
-use crate::state::{GlobalConfig, MemberAccount, MemberStatus, EnrollmentWindow, ContributionLedger, QualifyingEvent};
 use crate::errors::MembershipError;
-use crate::events::{EnrollmentWindowOpened, EnrollmentWindowClosed, MemberEnrolled, QualifyingEventSet};
+use crate::events::{
+    EnrollmentWindowClosed, EnrollmentWindowOpened, MemberEnrolled, QualifyingEventSet,
+};
+use crate::state::{
+    ContributionLedger, EnrollmentWindow, GlobalConfig, MemberAccount, MemberStatus,
+    QualifyingEvent,
+};
+use anchor_lang::prelude::*;
 
 /// Open an enrollment window
 #[derive(Accounts)]
@@ -50,8 +55,14 @@ pub fn open_enrollment_window(
 ) -> Result<()> {
     let clock = Clock::get()?;
 
-    require!(params.end_time > params.start_time, MembershipError::InvalidWindowConfig);
-    require!(params.max_enrollments > 0, MembershipError::InvalidWindowConfig);
+    require!(
+        params.end_time > params.start_time,
+        MembershipError::InvalidWindowConfig
+    );
+    require!(
+        params.max_enrollments > 0,
+        MembershipError::InvalidWindowConfig
+    );
 
     let window = &mut ctx.accounts.enrollment_window;
     window.window_id = params.window_id;
@@ -175,8 +186,14 @@ pub fn enroll_member(ctx: Context<EnrollMember>, params: EnrollMemberParams) -> 
     let window = &mut ctx.accounts.enrollment_window;
 
     // Validate window is open
-    require!(window.is_open(clock.unix_timestamp), MembershipError::WindowNotActive);
-    require!(params.age > 0 && params.age <= 64, MembershipError::InvalidAge);
+    require!(
+        window.is_open(clock.unix_timestamp),
+        MembershipError::WindowNotActive
+    );
+    require!(
+        params.age > 0 && params.age <= 64,
+        MembershipError::InvalidAge
+    );
 
     // Increment counts
     window.enrollment_count += 1;

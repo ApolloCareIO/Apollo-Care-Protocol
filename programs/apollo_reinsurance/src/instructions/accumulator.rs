@@ -1,8 +1,11 @@
 use anchor_lang::prelude::*;
 
-use crate::state::{ReinsuranceConfig, ReinsuranceTreaty, MemberClaimsAccumulator, MonthlyAggregate, ReinsuranceLayerType};
 use crate::errors::ReinsuranceError;
 use crate::events::*;
+use crate::state::{
+    MemberClaimsAccumulator, MonthlyAggregate, ReinsuranceConfig, ReinsuranceLayerType,
+    ReinsuranceTreaty,
+};
 
 // ============================================================================
 // CREATE MEMBER ACCUMULATOR
@@ -16,7 +19,7 @@ pub struct CreateMemberAccumulator<'info> {
         bump = config.bump,
     )]
     pub config: Account<'info, ReinsuranceConfig>,
-    
+
     #[account(
         init,
         payer = payer,
@@ -29,10 +32,10 @@ pub struct CreateMemberAccumulator<'info> {
         bump
     )]
     pub accumulator: Account<'info, MemberClaimsAccumulator>,
-    
+
     #[account(mut)]
     pub payer: Signer<'info>,
-    
+
     pub system_program: Program<'info, System>,
 }
 
@@ -43,7 +46,7 @@ pub fn create_member_accumulator(
 ) -> Result<()> {
     let accumulator = &mut ctx.accounts.accumulator;
     let clock = Clock::get()?;
-    
+
     accumulator.member = member;
     accumulator.policy_year = policy_year;
     accumulator.ytd_claims = 0;
@@ -55,15 +58,15 @@ pub fn create_member_accumulator(
     accumulator.first_trigger_timestamp = 0;
     accumulator.last_claim_timestamp = 0;
     accumulator.bump = ctx.bumps.accumulator;
-    
+
     emit!(MemberAccumulatorCreated {
         member,
         policy_year,
         timestamp: clock.unix_timestamp,
     });
-    
+
     msg!("Member accumulator created for year {}", policy_year);
-    
+
     Ok(())
 }
 
@@ -79,17 +82,17 @@ pub struct RecordClaimToAccumulator<'info> {
         bump = config.bump,
     )]
     pub config: Account<'info, ReinsuranceConfig>,
-    
+
     /// Specific stop-loss treaty to check against
     #[account(
-        constraint = treaty.layer_type == ReinsuranceLayerType::SpecificStopLoss 
+        constraint = treaty.layer_type == ReinsuranceLayerType::SpecificStopLoss
             @ ReinsuranceError::TreatyTypeMismatch,
     )]
     pub treaty: Account<'info, ReinsuranceTreaty>,
-    
+
     #[account(mut)]
     pub accumulator: Account<'info, MemberClaimsAccumulator>,
-    
+
     /// Authority must be claims program or authorized caller
     pub authority: Signer<'info>,
 }
@@ -103,28 +106,34 @@ pub fn record_claim_to_accumulator(
     let treaty = &ctx.accounts.treaty;
     let accumulator = &mut ctx.accounts.accumulator;
     let clock = Clock::get()?;
-    
+
     require!(claim_amount > 0, ReinsuranceError::ZeroAmount);
-    
+
     // Check if this triggers stop-loss
     let was_triggered = accumulator.stop_loss_triggered;
     let excess = accumulator.check_stop_loss_trigger(claim_amount, treaty.attachment_point);
-    
+
     // Update accumulator
-    accumulator.ytd_claims = accumulator.ytd_claims.checked_add(claim_amount)
+    accumulator.ytd_claims = accumulator
+        .ytd_claims
+        .checked_add(claim_amount)
         .ok_or(ReinsuranceError::Overflow)?;
-    accumulator.claims_count = accumulator.claims_count.checked_add(1)
+    accumulator.claims_count = accumulator
+        .claims_count
+        .checked_add(1)
         .ok_or(ReinsuranceError::Overflow)?;
     accumulator.last_claim_timestamp = clock.unix_timestamp;
-    
+
     if claim_amount > accumulator.max_single_claim {
         accumulator.max_single_claim = claim_amount;
     }
-    
+
     // Update global YTD claims
-    config.ytd_claims_paid = config.ytd_claims_paid.checked_add(claim_amount)
+    config.ytd_claims_paid = config
+        .ytd_claims_paid
+        .checked_add(claim_amount)
         .ok_or(ReinsuranceError::Overflow)?;
-    
+
     emit!(MemberClaimRecorded {
         member: accumulator.member,
         claim_amount,
@@ -133,14 +142,14 @@ pub fn record_claim_to_accumulator(
         original_claim_id,
         timestamp: clock.unix_timestamp,
     });
-    
+
     // If just triggered stop-loss
     if let Some(excess_amount) = excess {
         if !was_triggered {
             accumulator.stop_loss_triggered = true;
             accumulator.first_trigger_timestamp = clock.unix_timestamp;
             accumulator.excess_claimed = excess_amount;
-            
+
             emit!(MemberStopLossBreached {
                 member: accumulator.member,
                 ytd_claims: accumulator.ytd_claims,
@@ -148,17 +157,19 @@ pub fn record_claim_to_accumulator(
                 excess_amount,
                 breach_timestamp: clock.unix_timestamp,
             });
-            
-            msg!("Stop-loss triggered for member: {} USDC excess", 
+
+            msg!(
+                "Stop-loss triggered for member: {} USDC excess",
                 excess_amount / 1_000_000
             );
         } else {
             // Already triggered, update excess
-            accumulator.excess_claimed = accumulator.ytd_claims
+            accumulator.excess_claimed = accumulator
+                .ytd_claims
                 .saturating_sub(treaty.attachment_point);
         }
     }
-    
+
     Ok(())
 }
 
@@ -173,10 +184,10 @@ pub struct UpdateAccumulatorRecovery<'info> {
         bump = config.bump,
     )]
     pub config: Account<'info, ReinsuranceConfig>,
-    
+
     #[account(mut)]
     pub accumulator: Account<'info, MemberClaimsAccumulator>,
-    
+
     pub authority: Signer<'info>,
 }
 
@@ -186,20 +197,22 @@ pub fn update_accumulator_recovery(
 ) -> Result<()> {
     let config = &ctx.accounts.config;
     let accumulator = &mut ctx.accounts.accumulator;
-    
+
     // Validate authority
     let is_authorized = ctx.accounts.authority.key() == config.authority
         || ctx.accounts.authority.key() == config.reinsurance_committee;
     require!(is_authorized, ReinsuranceError::Unauthorized);
-    
-    accumulator.recovered_amount = accumulator.recovered_amount
+
+    accumulator.recovered_amount = accumulator
+        .recovered_amount
         .checked_add(recovered_amount)
         .ok_or(ReinsuranceError::Overflow)?;
-    
-    msg!("Accumulator recovery updated: {} USDC total recovered",
+
+    msg!(
+        "Accumulator recovery updated: {} USDC total recovered",
         accumulator.recovered_amount / 1_000_000
     );
-    
+
     Ok(())
 }
 
@@ -215,7 +228,7 @@ pub struct InitializeMonthlyAggregate<'info> {
         bump = config.bump,
     )]
     pub config: Account<'info, ReinsuranceConfig>,
-    
+
     #[account(
         init,
         payer = payer,
@@ -228,10 +241,10 @@ pub struct InitializeMonthlyAggregate<'info> {
         bump
     )]
     pub monthly: Account<'info, MonthlyAggregate>,
-    
+
     #[account(mut)]
     pub payer: Signer<'info>,
-    
+
     pub system_program: Program<'info, System>,
 }
 
@@ -242,14 +255,17 @@ pub fn initialize_monthly_aggregate(
     expected_claims: u64,
 ) -> Result<()> {
     let monthly = &mut ctx.accounts.monthly;
-    
-    require!(month >= 1 && month <= 12, ReinsuranceError::InvalidConfiguration);
-    
+
+    require!(
+        month >= 1 && month <= 12,
+        ReinsuranceError::InvalidConfiguration
+    );
+
     monthly.policy_year = policy_year;
     monthly.month = month;
     monthly.expected_claims = expected_claims;
     monthly.bump = ctx.bumps.monthly;
-    
+
     // Initialize counters
     monthly.total_claims = 0;
     monthly.claims_count = 0;
@@ -259,9 +275,13 @@ pub fn initialize_monthly_aggregate(
     monthly.max_claim = 0;
     monthly.shock_claims_count = 0;
     monthly.last_updated = 0;
-    
-    msg!("Monthly aggregate initialized for {}/{}", policy_year, month);
-    
+
+    msg!(
+        "Monthly aggregate initialized for {}/{}",
+        policy_year,
+        month
+    );
+
     Ok(())
 }
 
@@ -272,10 +292,10 @@ pub struct UpdateMonthlyAggregate<'info> {
         bump = config.bump,
     )]
     pub config: Account<'info, ReinsuranceConfig>,
-    
+
     #[account(mut)]
     pub monthly: Account<'info, MonthlyAggregate>,
-    
+
     pub authority: Signer<'info>,
 }
 
@@ -287,34 +307,41 @@ pub fn update_monthly_aggregate(
 ) -> Result<()> {
     let monthly = &mut ctx.accounts.monthly;
     let clock = Clock::get()?;
-    
-    monthly.total_claims = monthly.total_claims.checked_add(claim_amount)
+
+    monthly.total_claims = monthly
+        .total_claims
+        .checked_add(claim_amount)
         .ok_or(ReinsuranceError::Overflow)?;
-    monthly.claims_count = monthly.claims_count.checked_add(1)
+    monthly.claims_count = monthly
+        .claims_count
+        .checked_add(1)
         .ok_or(ReinsuranceError::Overflow)?;
-    
+
     if monthly.claims_count > 0 {
         monthly.avg_claim_amount = monthly.total_claims / monthly.claims_count as u64;
     }
-    
+
     if claim_amount > monthly.max_claim {
         monthly.max_claim = claim_amount;
     }
-    
+
     if is_shock_claim {
-        monthly.shock_claims_count = monthly.shock_claims_count.checked_add(1)
+        monthly.shock_claims_count = monthly
+            .shock_claims_count
+            .checked_add(1)
             .ok_or(ReinsuranceError::Overflow)?;
     }
-    
+
     monthly.ytd_through_month = ytd_total;
-    
+
     // Calculate ratio
     if monthly.expected_claims > 0 {
-        monthly.ratio_bps = ((monthly.total_claims as u128 * 10_000) / monthly.expected_claims as u128) as u16;
+        monthly.ratio_bps =
+            ((monthly.total_claims as u128 * 10_000) / monthly.expected_claims as u128) as u16;
     }
-    
+
     monthly.last_updated = clock.unix_timestamp;
-    
+
     emit!(MonthlyAggregateUpdated {
         policy_year: monthly.policy_year,
         month: monthly.month,
@@ -325,7 +352,7 @@ pub fn update_monthly_aggregate(
         ytd_through_month: monthly.ytd_through_month,
         timestamp: clock.unix_timestamp,
     });
-    
+
     Ok(())
 }
 
@@ -342,7 +369,7 @@ pub struct ResetAccumulators<'info> {
         has_one = authority @ ReinsuranceError::Unauthorized,
     )]
     pub config: Account<'info, ReinsuranceConfig>,
-    
+
     pub authority: Signer<'info>,
 }
 
@@ -351,22 +378,22 @@ pub struct ResetAccumulators<'info> {
 pub fn mark_accumulators_for_reset(ctx: Context<ResetAccumulators>) -> Result<()> {
     let config = &ctx.accounts.config;
     let clock = Clock::get()?;
-    
+
     // Ensure policy year has ended
     require!(
         clock.unix_timestamp > config.policy_year_end,
         ReinsuranceError::CannotResetDuringActiveYear
     );
-    
+
     msg!("Accumulators marked for reset. Create new accumulators for next policy year.");
-    
+
     emit!(AccumulatorsReset {
         policy_year: 0, // Will be filled by caller
         members_reset: 0,
         total_ytd_reset: config.ytd_claims_paid,
         timestamp: clock.unix_timestamp,
     });
-    
+
     Ok(())
 }
 
@@ -388,13 +415,14 @@ pub struct CheckAggregateThresholds<'info> {
 pub fn check_aggregate_thresholds(ctx: Context<CheckAggregateThresholds>) -> Result<()> {
     let config = &mut ctx.accounts.config;
     let clock = Clock::get()?;
-    
+
     let current_ratio = config.current_claims_ratio_bps();
-    
+
     // Check warning threshold (e.g., 100% of expected)
     if current_ratio >= 10_000 && !config.aggregate_triggered {
         let headroom = if config.aggregate_trigger_ratio_bps as u64 > current_ratio {
-            let trigger_amount = config.expected_annual_claims
+            let trigger_amount = config
+                .expected_annual_claims
                 .checked_mul(config.aggregate_trigger_ratio_bps as u64)
                 .unwrap_or(0)
                 .checked_div(10_000)
@@ -403,7 +431,7 @@ pub fn check_aggregate_thresholds(ctx: Context<CheckAggregateThresholds>) -> Res
         } else {
             0
         };
-        
+
         emit!(ClaimsThresholdWarning {
             current_ytd: config.ytd_claims_paid,
             expected_annual: config.expected_annual_claims,
@@ -413,14 +441,14 @@ pub fn check_aggregate_thresholds(ctx: Context<CheckAggregateThresholds>) -> Res
             remaining_headroom: headroom,
             timestamp: clock.unix_timestamp,
         });
-        
+
         msg!("Warning: Claims at {}% of expected", current_ratio / 100);
     }
-    
+
     // Check if aggregate should trigger
     if config.should_trigger_aggregate() {
         config.aggregate_triggered = true;
-        
+
         emit!(AggregateStopLossTriggered {
             treaty_id: 0, // Will be filled when filing recovery
             ytd_claims: config.ytd_claims_paid,
@@ -430,14 +458,17 @@ pub fn check_aggregate_thresholds(ctx: Context<CheckAggregateThresholds>) -> Res
             excess_amount: config.calculate_aggregate_recoverable(),
             timestamp: clock.unix_timestamp,
         });
-        
-        msg!("AGGREGATE STOP-LOSS TRIGGERED at {}% of expected", current_ratio / 100);
+
+        msg!(
+            "AGGREGATE STOP-LOSS TRIGGERED at {}% of expected",
+            current_ratio / 100
+        );
     }
-    
+
     // Check if catastrophic should trigger
     if config.should_trigger_catastrophic() {
         config.catastrophic_triggered = true;
-        
+
         emit!(CatastrophicLayerTriggered {
             treaty_id: 0,
             ytd_claims: config.ytd_claims_paid,
@@ -446,9 +477,12 @@ pub fn check_aggregate_thresholds(ctx: Context<CheckAggregateThresholds>) -> Res
             actual_ratio_bps: current_ratio,
             timestamp: clock.unix_timestamp,
         });
-        
-        msg!("CATASTROPHIC LAYER TRIGGERED at {}% of expected", current_ratio / 100);
+
+        msg!(
+            "CATASTROPHIC LAYER TRIGGERED at {}% of expected",
+            current_ratio / 100
+        );
     }
-    
+
     Ok(())
 }

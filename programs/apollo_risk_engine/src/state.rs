@@ -64,14 +64,14 @@ impl RiskConfig {
     pub const DEFAULT_MAX_CHILDREN: u8 = 3;
     pub const DEFAULT_TOBACCO_FACTOR_BPS: u16 = 15000; // 1.5x (50% surcharge, per spec)
     pub const DEFAULT_SHOCK_FACTOR_BPS: u16 = 10000; // 1.0x (normal operations)
-    
+
     // ShockFactor limits per CAR zone (per Actuarial Spec)
     // These define maximum premium multipliers for each solvency zone
     pub const MAX_AUTO_SHOCK_BPS: u16 = 12000; // 1.2x (Yellow zone - auto adjustment)
     pub const MAX_COMMITTEE_SHOCK_BPS: u16 = 15000; // 1.5x (Orange zone - committee approval)
     pub const MAX_EMERGENCY_SHOCK_BPS: u16 = 20000; // 2.0x (Red zone - DAO emergency)
-    // Note: Red zone 2.0x is an actuarial override from spec's 1.5x
-    // Rationale: 50% increase insufficient for catastrophic scenarios
+                                                    // Note: Red zone 2.0x is an actuarial override from spec's 1.5x
+                                                    // Rationale: 50% increase insufficient for catastrophic scenarios
 }
 
 /// CMS-compliant age band rating table
@@ -150,16 +150,56 @@ pub struct RegionFactor {
 /// Default CMS-compliant age bands
 pub fn default_age_bands() -> Vec<AgeBand> {
     vec![
-        AgeBand { min_age: 0, max_age: 20, factor_bps: 6350 },    // 0.635x
-        AgeBand { min_age: 21, max_age: 24, factor_bps: 10000 },  // 1.0x (reference)
-        AgeBand { min_age: 25, max_age: 29, factor_bps: 10040 },  // 1.004x
-        AgeBand { min_age: 30, max_age: 34, factor_bps: 10130 },  // 1.013x
-        AgeBand { min_age: 35, max_age: 39, factor_bps: 10460 },  // 1.046x
-        AgeBand { min_age: 40, max_age: 44, factor_bps: 11350 },  // 1.135x
-        AgeBand { min_age: 45, max_age: 49, factor_bps: 12780 },  // 1.278x
-        AgeBand { min_age: 50, max_age: 54, factor_bps: 14870 },  // 1.487x
-        AgeBand { min_age: 55, max_age: 59, factor_bps: 17060 },  // 1.706x
-        AgeBand { min_age: 60, max_age: 64, factor_bps: 19050 },  // 1.905x (3:1 max)
+        AgeBand {
+            min_age: 0,
+            max_age: 20,
+            factor_bps: 6350,
+        }, // 0.635x
+        AgeBand {
+            min_age: 21,
+            max_age: 24,
+            factor_bps: 10000,
+        }, // 1.0x (reference)
+        AgeBand {
+            min_age: 25,
+            max_age: 29,
+            factor_bps: 10040,
+        }, // 1.004x
+        AgeBand {
+            min_age: 30,
+            max_age: 34,
+            factor_bps: 10130,
+        }, // 1.013x
+        AgeBand {
+            min_age: 35,
+            max_age: 39,
+            factor_bps: 10460,
+        }, // 1.046x
+        AgeBand {
+            min_age: 40,
+            max_age: 44,
+            factor_bps: 11350,
+        }, // 1.135x
+        AgeBand {
+            min_age: 45,
+            max_age: 49,
+            factor_bps: 12780,
+        }, // 1.278x
+        AgeBand {
+            min_age: 50,
+            max_age: 54,
+            factor_bps: 14870,
+        }, // 1.487x
+        AgeBand {
+            min_age: 55,
+            max_age: 59,
+            factor_bps: 17060,
+        }, // 1.706x
+        AgeBand {
+            min_age: 60,
+            max_age: 64,
+            factor_bps: 19050,
+        }, // 1.905x (3:1 max)
     ]
 }
 
@@ -200,7 +240,7 @@ impl CarState {
     pub const SEED_PREFIX: &'static [u8] = b"car_state";
     pub const DEFAULT_TARGET_CAR: u16 = 12500; // 125%
     pub const DEFAULT_MIN_CAR: u16 = 10000; // 100%
-    
+
     // Bootstrap constants
     /// Minimum members needed for credible CAR calculation
     pub const MIN_CREDIBLE_MEMBERS: u64 = 50;
@@ -210,7 +250,7 @@ impl CarState {
 
     /// Compute CAR from inputs
     /// CAR = (Total Reserves + Eligible APH) / Expected Claims
-    /// 
+    ///
     /// BOOTSTRAP HANDLING: Returns u16::MAX when no members/claims
     /// This allows unlimited enrollment during initial launch phase
     pub fn compute_car(&self) -> u16 {
@@ -221,7 +261,8 @@ impl CarState {
             return u16::MAX; // Green zone - unlimited enrollment
         }
 
-        let total_capital = self.total_usdc_reserves
+        let total_capital = self
+            .total_usdc_reserves
             .saturating_add(self.eligible_aph_usdc);
 
         // CAR = (capital / claims) * 10000
@@ -233,14 +274,14 @@ impl CarState {
         // Cap at u16 max
         car.min(u16::MAX as u64) as u16
     }
-    
+
     /// Compute CAR with explicit bootstrap handling
     /// Use this when member count is known for more accurate calculation
-    /// 
+    ///
     /// # Arguments
     /// * `member_count` - Current number of active members
     /// * `avg_annual_claim` - Optional override for average claims per member
-    /// 
+    ///
     /// # Returns
     /// * CAR in basis points (10000 = 100%)
     pub fn compute_car_with_members(
@@ -252,28 +293,29 @@ impl CarState {
         if member_count == 0 {
             return u16::MAX;
         }
-        
+
         // Use provided average or default
         let avg_claim = avg_annual_claim.unwrap_or(Self::AVG_ANNUAL_CLAIMS_PER_MEMBER);
-        
+
         // Calculate expected annual claims from member count
         let expected_claims = member_count.saturating_mul(avg_claim);
-        
+
         if expected_claims == 0 {
             return u16::MAX;
         }
-        
-        let total_capital = self.total_usdc_reserves
+
+        let total_capital = self
+            .total_usdc_reserves
             .saturating_add(self.eligible_aph_usdc);
-        
+
         let car = total_capital
             .saturating_mul(10000)
             .checked_div(expected_claims)
             .unwrap_or(u16::MAX as u64);
-        
+
         car.min(u16::MAX as u64) as u16
     }
-    
+
     /// Check if we have enough members for actuarially credible experience
     pub fn has_credible_experience(member_count: u64) -> bool {
         member_count >= Self::MIN_CREDIBLE_MEMBERS

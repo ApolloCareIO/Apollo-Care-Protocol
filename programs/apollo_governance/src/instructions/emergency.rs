@@ -1,12 +1,11 @@
 // programs/apollo_governance/src/instructions/emergency.rs
 
-use anchor_lang::prelude::*;
-use crate::state::{DaoConfig, Multisig, CommitteeType};
 use crate::errors::GovernanceError;
 use crate::events::{
-    EmergencyActivated, EmergencyDeactivated,
-    ProtocolPaused, ProtocolUnpaused, CommitteeUpdated
+    CommitteeUpdated, EmergencyActivated, EmergencyDeactivated, ProtocolPaused, ProtocolUnpaused,
 };
+use crate::state::{CommitteeType, DaoConfig, Multisig};
+use anchor_lang::prelude::*;
 
 /// Activate emergency mode - requires Risk Committee multisig
 #[derive(Accounts)]
@@ -80,7 +79,9 @@ pub fn deactivate_emergency(ctx: Context<DeactivateEmergency>) -> Result<()> {
 
     // Verify authorization
     let is_authority = ctx.accounts.deactivator.key() == dao_config.authority;
-    let is_risk_member = ctx.accounts.risk_committee
+    let is_risk_member = ctx
+        .accounts
+        .risk_committee
         .as_ref()
         .map(|rc| rc.is_signer(&ctx.accounts.deactivator.key()))
         .unwrap_or(false);
@@ -90,7 +91,10 @@ pub fn deactivate_emergency(ctx: Context<DeactivateEmergency>) -> Result<()> {
         GovernanceError::Unauthorized
     );
 
-    require!(dao_config.emergency_active, GovernanceError::EmergencyNotActive);
+    require!(
+        dao_config.emergency_active,
+        GovernanceError::EmergencyNotActive
+    );
 
     let duration = clock.unix_timestamp - dao_config.emergency_activated_at;
 
@@ -125,8 +129,8 @@ pub fn pause_protocol(ctx: Context<PauseProtocol>) -> Result<()> {
 
     // Must be authority or emergency must be active
     let is_authority = ctx.accounts.pauser.key() == dao_config.authority;
-    let emergency_valid = dao_config.emergency_active &&
-        !dao_config.is_emergency_expired(clock.unix_timestamp);
+    let emergency_valid =
+        dao_config.emergency_active && !dao_config.is_emergency_expired(clock.unix_timestamp);
 
     require!(
         is_authority || emergency_valid,
@@ -165,7 +169,10 @@ pub fn unpause_protocol(ctx: Context<UnpauseProtocol>) -> Result<()> {
     let clock = Clock::get()?;
     let dao_config = &mut ctx.accounts.dao_config;
 
-    require!(dao_config.protocol_paused, GovernanceError::ProtocolNotPaused);
+    require!(
+        dao_config.protocol_paused,
+        GovernanceError::ProtocolNotPaused
+    );
 
     dao_config.protocol_paused = false;
 
@@ -196,7 +203,7 @@ pub struct UpdateCommittee<'info> {
 pub fn update_committee(
     ctx: Context<UpdateCommittee>,
     committee_type: CommitteeType,
-    new_address: Pubkey
+    new_address: Pubkey,
 ) -> Result<()> {
     let clock = Clock::get()?;
     let dao_config = &mut ctx.accounts.dao_config;
@@ -206,22 +213,22 @@ pub fn update_committee(
             let old = dao_config.risk_committee;
             dao_config.risk_committee = new_address;
             old
-        },
+        }
         CommitteeType::Actuarial => {
             let old = dao_config.actuarial_committee;
             dao_config.actuarial_committee = new_address;
             old
-        },
+        }
         CommitteeType::Claims => {
             let old = dao_config.claims_committee;
             dao_config.claims_committee = new_address;
             old
-        },
+        }
         CommitteeType::Treasury => {
             let old = dao_config.treasury_committee;
             dao_config.treasury_committee = new_address;
             old
-        },
+        }
         CommitteeType::Dao => {
             return Err(GovernanceError::InvalidCommittee.into());
         }
@@ -278,7 +285,10 @@ pub struct UpdateEmergencyDuration<'info> {
     pub authority: Signer<'info>,
 }
 
-pub fn update_emergency_duration(ctx: Context<UpdateEmergencyDuration>, new_duration: i64) -> Result<()> {
+pub fn update_emergency_duration(
+    ctx: Context<UpdateEmergencyDuration>,
+    new_duration: i64,
+) -> Result<()> {
     require!(new_duration > 0, GovernanceError::InvalidExpiration);
     ctx.accounts.dao_config.max_emergency_duration = new_duration;
     Ok(())

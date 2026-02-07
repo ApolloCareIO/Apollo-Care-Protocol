@@ -1,9 +1,13 @@
 // programs/apollo_staking/src/instructions/slashing.rs
 
-use anchor_lang::prelude::*;
-use crate::state::{StakingConfig, StakingTier, StakePosition, AphVault, LiquidationQueue, LiquidationEntry};
 use crate::errors::StakingError;
-use crate::events::{Slashed, PositionSlashed, LiquidationQueued, LiquidationExecuted, CircuitBreakerTriggered};
+use crate::events::{
+    CircuitBreakerTriggered, LiquidationExecuted, LiquidationQueued, PositionSlashed, Slashed,
+};
+use crate::state::{
+    AphVault, LiquidationEntry, LiquidationQueue, StakePosition, StakingConfig, StakingTier,
+};
+use anchor_lang::prelude::*;
 
 /// Slash a specific position (called during claim shortfall)
 #[derive(Accounts)]
@@ -159,12 +163,15 @@ pub fn slash_tier(
     let liq_queue = &mut ctx.accounts.liquidation_queue;
 
     // Calculate max slashable for the tier
-    let max_tier_slash = tier.total_staked
+    let max_tier_slash = tier
+        .total_staked
         .saturating_mul(tier.max_loss_bps as u64)
         .checked_div(10000)
         .unwrap_or(0);
 
-    let actual_slash = total_slash_amount.min(max_tier_slash).min(tier.total_staked);
+    let actual_slash = total_slash_amount
+        .min(max_tier_slash)
+        .min(tier.total_staked);
     require!(actual_slash > 0, StakingError::SlashExceedsPosition);
 
     // Update tier totals (individual positions updated separately)
@@ -258,7 +265,7 @@ pub fn execute_liquidation(
 
     // Capture values before mutable borrow
     let circuit_breaker_bps = liq_queue.circuit_breaker_bps;
-    
+
     let entry = &mut liq_queue.entries[entry_index as usize];
 
     require!(!entry.is_complete, StakingError::PositionAlreadyClosed);

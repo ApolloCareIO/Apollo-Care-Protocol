@@ -1,9 +1,9 @@
 // programs/apollo_risk_engine/src/instructions/rating.rs
 
-use anchor_lang::prelude::*;
-use crate::state::{RiskConfig, RatingTable, AgeBand, RegionFactor, ContributionQuote};
 use crate::errors::RiskEngineError;
-use crate::events::{RatingTableUpdated, ContributionQuoted};
+use crate::events::{ContributionQuoted, RatingTableUpdated};
+use crate::state::{AgeBand, ContributionQuote, RatingTable, RegionFactor, RiskConfig};
+use anchor_lang::prelude::*;
 
 /// Set/update the rating table
 #[derive(Accounts)]
@@ -49,7 +49,10 @@ pub fn set_rating_table(ctx: Context<SetRatingTable>, params: SetRatingTablePara
         let mut max_factor: u16 = 0;
 
         for (i, band) in bands.iter().enumerate() {
-            require!(band.min_age <= band.max_age, RiskEngineError::InvalidAgeBand);
+            require!(
+                band.min_age <= band.max_age,
+                RiskEngineError::InvalidAgeBand
+            );
             require!(band.factor_bps > 0, RiskEngineError::InvalidAgeBand);
 
             min_factor = min_factor.min(band.factor_bps);
@@ -138,7 +141,10 @@ pub fn quote_contribution(
     let config = &ctx.accounts.risk_config;
     let table = &ctx.accounts.rating_table;
 
-    require!(params.age > 0 && params.age <= 64, RiskEngineError::InvalidAge);
+    require!(
+        params.age > 0 && params.age <= 64,
+        RiskEngineError::InvalidAge
+    );
 
     // Get factors
     let age_factor_bps = table.get_age_factor(params.age);
@@ -160,19 +166,23 @@ pub fn quote_contribution(
     // Add children (capped)
     let children_count = params.num_children.min(config.max_children);
     if children_count > 0 {
-        let child_cost = config.base_rate_adult
+        let child_cost = config
+            .base_rate_adult
             .saturating_mul(config.child_factor_bps as u64)
             .checked_div(10000)
             .ok_or(RiskEngineError::MathOverflow)?;
-        base_amount = base_amount.saturating_add(
-            child_cost.saturating_mul(children_count as u64)
-        );
+        base_amount = base_amount.saturating_add(child_cost.saturating_mul(children_count as u64));
     }
 
     // Add additional adults
-    for adult_age in params.additional_adult_ages.iter().take(params.num_additional_adults as usize) {
+    for adult_age in params
+        .additional_adult_ages
+        .iter()
+        .take(params.num_additional_adults as usize)
+    {
         let adult_age_factor = table.get_age_factor(*adult_age);
-        let adult_cost = config.base_rate_adult
+        let adult_cost = config
+            .base_rate_adult
             .saturating_mul(adult_age_factor as u64)
             .checked_div(10000)
             .ok_or(RiskEngineError::MathOverflow)?;

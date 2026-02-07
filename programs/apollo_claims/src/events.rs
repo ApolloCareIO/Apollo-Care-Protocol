@@ -1,7 +1,7 @@
 // programs/apollo_claims/src/events.rs
 
+use crate::state::{AttestationRecommendation, ClaimCategory, ClaimStatus};
 use anchor_lang::prelude::*;
-use crate::state::{ClaimStatus, ClaimCategory, AttestationRecommendation};
 
 /// Emitted when claims config is initialized
 #[event]

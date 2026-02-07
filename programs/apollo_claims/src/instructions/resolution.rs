@@ -1,10 +1,10 @@
 // programs/apollo_claims/src/instructions/resolution.rs
 
+use crate::errors::ClaimsError;
+use crate::events::{ClaimAppealed, ClaimApproved, ClaimClosed, ClaimDenied, ClaimPaid};
+use crate::state::{ClaimAccount, ClaimStatus, ClaimsConfig};
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Token, TokenAccount};
-use crate::state::{ClaimsConfig, ClaimAccount, ClaimStatus};
-use crate::errors::ClaimsError;
-use crate::events::{ClaimApproved, ClaimDenied, ClaimPaid, ClaimClosed, ClaimAppealed};
 
 /// Approve a claim
 #[derive(Accounts)]
@@ -50,7 +50,10 @@ pub fn approve_claim(ctx: Context<ApproveClaim>, approved_amount: u64) -> Result
 
     // Approved amount can be less than requested but not zero for approval
     require!(approved_amount > 0, ClaimsError::InvalidClaimAmount);
-    require!(approved_amount <= claim.requested_amount, ClaimsError::InvalidClaimAmount);
+    require!(
+        approved_amount <= claim.requested_amount,
+        ClaimsError::InvalidClaimAmount
+    );
 
     claim.approved_amount = approved_amount;
     claim.status = ClaimStatus::Approved;
@@ -145,7 +148,6 @@ pub struct PayClaim<'info> {
 
     // NOTE: In production, this would include CPI to reserves program
     // For scaffold, we just update state and emit events
-
     pub payer: Signer<'info>,
 
     pub token_program: Program<'info, Token>,
@@ -157,7 +159,10 @@ pub fn pay_claim(ctx: Context<PayClaim>) -> Result<()> {
     let claim = &mut ctx.accounts.claim;
 
     require!(claim.approved_amount > 0, ClaimsError::InvalidClaimAmount);
-    require!(claim.paid_amount < claim.approved_amount, ClaimsError::AlreadyPaid);
+    require!(
+        claim.paid_amount < claim.approved_amount,
+        ClaimsError::AlreadyPaid
+    );
 
     let payment_amount = claim.approved_amount - claim.paid_amount;
 

@@ -1,7 +1,7 @@
 // programs/apollo_reserves/src/events.rs
 
-use anchor_lang::prelude::*;
 use crate::state::WaterfallSource;
+use anchor_lang::prelude::*;
 
 /// Emitted when reserves are initialized
 #[event]

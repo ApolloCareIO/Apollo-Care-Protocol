@@ -1,10 +1,10 @@
 // programs/apollo_membership/src/instructions/contributions.rs
 
-use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Token, TokenAccount};
-use crate::state::{GlobalConfig, MemberAccount, ContributionLedger};
 use crate::errors::MembershipError;
 use crate::events::{ContributionDeposited, PersistencyDiscountApplied};
+use crate::state::{ContributionLedger, GlobalConfig, MemberAccount};
+use anchor_lang::prelude::*;
+use anchor_spl::token::{self, Token, TokenAccount};
 
 /// Deposit a contribution
 #[derive(Accounts)]
@@ -99,7 +99,8 @@ pub fn deposit_contribution(ctx: Context<DepositContribution>, amount: u64) -> R
     }
 
     // Update member totals
-    member_account.total_contributions_paid = member_account.total_contributions_paid
+    member_account.total_contributions_paid = member_account
+        .total_contributions_paid
         .saturating_add(amount);
     member_account.last_contribution_at = clock.unix_timestamp;
 
@@ -155,8 +156,8 @@ pub fn apply_persistency_discount(ctx: Context<ApplyPersistencyDiscount>) -> Res
 
     // Calculate discount based on years of continuous coverage
     let years = member.consecutive_months / 12;
-    let discount_bps = (years as u16 * config.persistency_discount_bps)
-        .min(config.max_persistency_discount_bps);
+    let discount_bps =
+        (years as u16 * config.persistency_discount_bps).min(config.max_persistency_discount_bps);
 
     // Already at max?
     require!(

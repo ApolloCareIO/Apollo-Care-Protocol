@@ -1,9 +1,9 @@
 // programs/apollo_membership/src/instructions/coverage.rs
 
-use anchor_lang::prelude::*;
-use crate::state::{GlobalConfig, MemberAccount, MemberStatus, ContributionLedger};
 use crate::errors::MembershipError;
 use crate::events::{CoverageActivated, MemberStatusChanged, MemberSuspended, MemberTerminated};
+use crate::state::{ContributionLedger, GlobalConfig, MemberAccount, MemberStatus};
+use anchor_lang::prelude::*;
 
 /// Activate coverage after waiting period
 #[derive(Accounts)]
@@ -174,8 +174,7 @@ pub fn reinstate_coverage(ctx: Context<ReinstateCoverage>) -> Result<()> {
     // Must have made a payment to reinstate
     // Payment should bring them current or ahead
     require!(
-        ledger.balance >= ledger.amount_due ||
-        clock.unix_timestamp <= ledger.next_payment_due,
+        ledger.balance >= ledger.amount_due || clock.unix_timestamp <= ledger.next_payment_due,
         MembershipError::InsufficientContribution
     );
 

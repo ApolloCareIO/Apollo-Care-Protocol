@@ -5,14 +5,14 @@
 // Creates staking config, APH vault using Token-2022 program,
 // and liquidation queue.
 
+use crate::errors::StakingError;
+use crate::events::{StakingConfigInitialized, StakingTierCreated};
+use crate::state::{default_tier_configs, AphVault, LiquidationQueue, StakingConfig, StakingTier};
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{
     Mint as MintInterface, TokenAccount as TokenAccountInterface, TokenInterface,
 };
 use apollo_core::aph_token;
-use crate::state::{StakingConfig, StakingTier, AphVault, LiquidationQueue, default_tier_configs};
-use crate::events::{StakingConfigInitialized, StakingTierCreated};
-use crate::errors::StakingError;
 
 // =============================================================================
 // INITIALIZE STAKING CONFIG
@@ -86,7 +86,10 @@ pub struct InitializeStakingConfigParams {
     pub skip_mint_validation: Option<bool>,
 }
 
-pub fn handler(ctx: Context<InitializeStakingConfig>, params: InitializeStakingConfigParams) -> Result<()> {
+pub fn handler(
+    ctx: Context<InitializeStakingConfig>,
+    params: InitializeStakingConfigParams,
+) -> Result<()> {
     let clock = Clock::get()?;
 
     // Validate APH mint address (skip for devnet if requested)
@@ -118,10 +121,12 @@ pub fn handler(ctx: Context<InitializeStakingConfig>, params: InitializeStakingC
     config.total_staked = 0;
     config.total_rewards_distributed = 0;
     config.current_epoch = 0;
-    config.epoch_duration = params.epoch_duration
+    config.epoch_duration = params
+        .epoch_duration
         .unwrap_or(StakingConfig::DEFAULT_EPOCH_DURATION);
     config.epoch_start_timestamp = clock.unix_timestamp;
-    config.aph_haircut_bps = params.aph_haircut_bps
+    config.aph_haircut_bps = params
+        .aph_haircut_bps
         .unwrap_or(StakingConfig::DEFAULT_HAIRCUT_BPS);
     config.is_active = true;
     config.emergency_unstake_fee_bps = StakingConfig::DEFAULT_EMERGENCY_FEE_BPS;
@@ -198,10 +203,16 @@ pub struct CreateStakingTierParams {
     pub lock_period: i64,
 }
 
-pub fn create_staking_tier(ctx: Context<CreateStakingTier>, params: CreateStakingTierParams) -> Result<()> {
+pub fn create_staking_tier(
+    ctx: Context<CreateStakingTier>,
+    params: CreateStakingTierParams,
+) -> Result<()> {
     let clock = Clock::get()?;
 
-    require!(params.min_apy_bps <= params.max_apy_bps, StakingError::InvalidApyConfig);
+    require!(
+        params.min_apy_bps <= params.max_apy_bps,
+        StakingError::InvalidApyConfig
+    );
     require!(params.lock_period > 0, StakingError::InvalidLockPeriod);
 
     let tier = &mut ctx.accounts.staking_tier;

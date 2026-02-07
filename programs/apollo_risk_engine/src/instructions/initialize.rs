@@ -1,8 +1,8 @@
 // programs/apollo_risk_engine/src/instructions/initialize.rs
 
-use anchor_lang::prelude::*;
-use crate::state::{RiskConfig, RatingTable, CarState, ZoneState, Zone, default_age_bands};
 use crate::events::RiskEngineInitialized;
+use crate::state::{default_age_bands, CarState, RatingTable, RiskConfig, Zone, ZoneState};
+use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 pub struct InitializeRiskConfig<'info> {
@@ -56,7 +56,10 @@ pub struct InitializeRiskConfigParams {
     pub initial_expected_annual_claims: u64,
 }
 
-pub fn handler(ctx: Context<InitializeRiskConfig>, params: InitializeRiskConfigParams) -> Result<()> {
+pub fn handler(
+    ctx: Context<InitializeRiskConfig>,
+    params: InitializeRiskConfigParams,
+) -> Result<()> {
     let clock = Clock::get()?;
 
     // Initialize risk config
@@ -64,7 +67,8 @@ pub fn handler(ctx: Context<InitializeRiskConfig>, params: InitializeRiskConfigP
     config.authority = ctx.accounts.authority.key();
     config.governance_program = params.governance_program;
     config.reserves_program = params.reserves_program;
-    config.base_rate_adult = params.base_rate_adult
+    config.base_rate_adult = params
+        .base_rate_adult
         .unwrap_or(RiskConfig::DEFAULT_BASE_RATE);
     config.child_factor_bps = RiskConfig::DEFAULT_CHILD_FACTOR_BPS;
     config.max_children = RiskConfig::DEFAULT_MAX_CHILDREN;

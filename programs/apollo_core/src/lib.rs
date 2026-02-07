@@ -26,11 +26,8 @@ pub mod phase;
 
 // Re-export phase types for convenience
 pub use phase::{
-    ProtocolPhase, 
-    ProtocolPhaseState, 
-    PhaseComplianceFlags,
-    Phase1To2Requirements,
-    Phase2To3Requirements,
+    Phase1To2Requirements, Phase2To3Requirements, PhaseComplianceFlags, ProtocolPhase,
+    ProtocolPhaseState,
 };
 
 // =============================================================================
@@ -72,7 +69,9 @@ pub mod aph_token {
 
     /// Helper to get mint authority pubkey
     pub fn mint_authority_pubkey() -> Pubkey {
-        MINT_AUTHORITY.parse().expect("Invalid mint authority address")
+        MINT_AUTHORITY
+            .parse()
+            .expect("Invalid mint authority address")
     }
 }
 
@@ -194,28 +193,31 @@ pub mod allocations {
         }
 
         pub fn is_vested(&self) -> bool {
-            matches!(self, AllocationCategory::CoreTeam | AllocationCategory::SeedInvestors)
+            matches!(
+                self,
+                AllocationCategory::CoreTeam | AllocationCategory::SeedInvestors
+            )
         }
 
         /// Returns true if this allocation is controlled by DAO governance
         pub fn is_dao_controlled(&self) -> bool {
             matches!(
                 self,
-                AllocationCategory::CommunityEcosystem |
-                AllocationCategory::InsuranceReserve |
-                AllocationCategory::Operations
+                AllocationCategory::CommunityEcosystem
+                    | AllocationCategory::InsuranceReserve
+                    | AllocationCategory::Operations
             )
         }
     }
 
     /// Verify allocations sum to 100%
     pub fn verify_allocations() -> bool {
-        let total_bps = COMMUNITY_ECOSYSTEM_BPS +
-            CORE_TEAM_BPS +
-            SEED_INVESTORS_BPS +
-            INSURANCE_RESERVE_BPS +
-            LIQUIDITY_EXCHANGES_BPS +
-            OPERATIONS_BPS;
+        let total_bps = COMMUNITY_ECOSYSTEM_BPS
+            + CORE_TEAM_BPS
+            + SEED_INVESTORS_BPS
+            + INSURANCE_RESERVE_BPS
+            + LIQUIDITY_EXCHANGES_BPS
+            + OPERATIONS_BPS;
         total_bps == 10000 // 100%
     }
 }
@@ -255,11 +257,7 @@ pub mod token_utils {
 
     /// Calculate the gross amount needed to transfer a net amount after fees
     /// If you want the recipient to receive `net_amount`, how much do you send?
-    pub fn calculate_gross_for_net(
-        net_amount: u64,
-        transfer_fee_bps: u16,
-        max_fee: u64,
-    ) -> u64 {
+    pub fn calculate_gross_for_net(net_amount: u64, transfer_fee_bps: u16, max_fee: u64) -> u64 {
         if transfer_fee_bps == 0 {
             return net_amount;
         }
@@ -772,31 +770,30 @@ pub mod actuarial {
 // ($1.5M-$5M capital instead of $50M ICO assumption)
 
 pub mod bootstrap {
-    
-    
+
     /// Maximum members in bootstrap phase (conservative for small capital)
     pub const BOOTSTRAP_MAX_MEMBERS: u32 = 200;
-    
+
     /// Shock claim threshold during bootstrap (lower = more scrutiny)
     /// $25K vs $100K in scaled mode
     pub const BOOTSTRAP_SHOCK_THRESHOLD: u64 = 25_000_000_000;
-    
+
     /// Auto-approve threshold during bootstrap (conservative)
     /// $500 vs $1,000 in scaled mode
     pub const BOOTSTRAP_AUTO_APPROVE: u64 = 500_000_000;
-    
+
     /// Minimum reserve days before accepting new members
     pub const BOOTSTRAP_MIN_RESERVE_DAYS: u16 = 90;
-    
+
     /// Enrollment cap in bootstrap (members per month)
     pub const BOOTSTRAP_ENROLLMENT_CAP: u32 = 25;
-    
+
     /// Minimum capital to exit bootstrap mode
     pub const BOOTSTRAP_EXIT_CAPITAL: u64 = 2_000_000_000_000; // $2M
-    
+
     /// Minimum members to exit bootstrap mode
     pub const BOOTSTRAP_EXIT_MEMBERS: u32 = 500;
-    
+
     /// Calculate enrollment capacity based on reserve coverage
     /// Returns maximum new members per month
     pub fn calculate_enrollment_capacity(
@@ -806,9 +803,9 @@ pub mod bootstrap {
         if expected_monthly_claims == 0 {
             return BOOTSTRAP_ENROLLMENT_CAP;
         }
-        
+
         let months_coverage = total_liquid_reserves / expected_monthly_claims;
-        
+
         match months_coverage {
             12.. => 100,  // 12+ months: up to 100/month
             6..=11 => 50, // 6-11 months: up to 50/month
@@ -825,7 +822,7 @@ pub mod bootstrap {
 
 pub mod phases {
     use super::*;
-    
+
     /// Protocol operating phases
     #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug)]
     #[repr(u8)]
@@ -835,26 +832,26 @@ pub mod phases {
         /// - No state licenses required (in most states)
         /// - "Not insurance" disclaimer required
         CostSharingMinistry = 0,
-        
+
         /// Phase 2: Regulatory Sandbox / Hybrid
         /// - Pilot insurance license in 1-2 states
         /// - Dual operation (HCSM + regulated in pilot states)
         /// - Working with regulators
         RegulatoryPilot = 1,
-        
+
         /// Phase 3: Licensed Insurer
         /// - Full insurance licenses
         /// - Compliance with state requirements
         /// - Guaranty fund participation
         LicensedInsurer = 2,
     }
-    
+
     impl Default for ProtocolPhase {
         fn default() -> Self {
             ProtocolPhase::CostSharingMinistry
         }
     }
-    
+
     impl ProtocolPhase {
         /// Get maximum individual claim amount for this phase
         pub fn max_individual_claim(&self) -> u64 {
@@ -864,15 +861,15 @@ pub mod phases {
                 ProtocolPhase::LicensedInsurer => 1_000_000_000_000,   // $1M
             }
         }
-        
+
         /// Whether pre-existing condition exclusions are allowed
         pub fn preexisting_exclusions_allowed(&self) -> bool {
             match self {
-                ProtocolPhase::CostSharingMinistry => true,  // HCSMs can exclude
-                _ => false,  // ACA-compliant = no exclusions
+                ProtocolPhase::CostSharingMinistry => true, // HCSMs can exclude
+                _ => false,                                 // ACA-compliant = no exclusions
             }
         }
-        
+
         /// Contribution terminology for member communications
         pub fn contribution_term(&self) -> &'static str {
             match self {
@@ -880,33 +877,33 @@ pub mod phases {
                 _ => "premium",
             }
         }
-        
+
         /// Whether this phase requires state insurance licenses
         pub fn requires_license(&self) -> bool {
             !matches!(self, ProtocolPhase::CostSharingMinistry)
         }
     }
-    
+
     // Phase transition requirements
-    
+
     /// Minimum members for Phase 1 → 2 transition
     pub const PHASE_2_MIN_MEMBERS: u32 = 1_000;
-    
+
     /// Minimum operating months for Phase 1 → 2
     pub const PHASE_2_MIN_MONTHS: u16 = 12;
-    
+
     /// Minimum capital for Phase 1 → 2 (USDC)
     pub const PHASE_2_MIN_CAPITAL: u64 = 2_000_000_000_000; // $2M
-    
+
     /// Maximum loss ratio for Phase 1 → 2 (100% = break-even)
     pub const PHASE_2_MAX_LOSS_RATIO_BPS: u16 = 10000;
-    
+
     /// Minimum members for Phase 2 → 3 transition
     pub const PHASE_3_MIN_MEMBERS: u32 = 5_000;
-    
+
     /// Minimum capital for Phase 2 → 3 (USDC)
     pub const PHASE_3_MIN_CAPITAL: u64 = 10_000_000_000_000; // $10M
-    
+
     /// Minimum licensed states for Phase 2 → 3
     pub const PHASE_3_MIN_LICENSED_STATES: u8 = 3;
 }
@@ -1117,7 +1114,7 @@ pub struct UpdateTransferFeeStatus<'info> {
 /// Helper functions for other programs to interact with APH Token-2022
 pub mod cpi_helpers {
     use super::*;
-    
+
     use anchor_spl::token_interface;
 
     /// Transfer APH tokens using Token-2022 program

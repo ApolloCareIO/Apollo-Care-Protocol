@@ -4,11 +4,11 @@
 // Tier 1 of three-tier claims processing
 // Instantly approves small routine claims without human review
 
-use anchor_lang::prelude::*;
-use crate::ai_oracle::{FastLaneConfig, FastLaneTracker};
 use super::ai_processing::FastLaneApproved;
-use crate::state::{ClaimsConfig, ClaimAccount, ClaimStatus, ClaimCategory};
+use crate::ai_oracle::{FastLaneConfig, FastLaneTracker};
 use crate::errors::ClaimsError;
+use crate::state::{ClaimAccount, ClaimCategory, ClaimStatus, ClaimsConfig};
+use anchor_lang::prelude::*;
 
 // =============================================================================
 // INITIALIZATION
@@ -57,20 +57,24 @@ pub fn initialize_fast_lane(
     params: InitializeFastLaneParams,
 ) -> Result<()> {
     let config = &mut ctx.accounts.fast_lane_config;
-    
+
     // Use bootstrap or standard defaults
     let max_amount = if params.bootstrap_mode {
         params.max_amount.min(FastLaneConfig::BOOTSTRAP_MAX_AMOUNT)
     } else {
         params.max_amount.min(FastLaneConfig::STANDARD_MAX_AMOUNT)
     };
-    
+
     let max_claims = if params.bootstrap_mode {
-        params.max_claims_per_period.min(FastLaneConfig::BOOTSTRAP_MAX_CLAIMS)
+        params
+            .max_claims_per_period
+            .min(FastLaneConfig::BOOTSTRAP_MAX_CLAIMS)
     } else {
-        params.max_claims_per_period.min(FastLaneConfig::STANDARD_MAX_CLAIMS)
+        params
+            .max_claims_per_period
+            .min(FastLaneConfig::STANDARD_MAX_CLAIMS)
     };
-    
+
     config.authority = ctx.accounts.authority.key();
     config.max_amount = max_amount;
     config.eligible_categories = params.eligible_categories;
@@ -81,7 +85,7 @@ pub fn initialize_fast_lane(
     config.total_fast_lane_approvals = 0;
     config.total_fast_lane_paid = 0;
     config.bump = ctx.bumps.fast_lane_config;
-    
+
     Ok(())
 }
 
@@ -116,7 +120,7 @@ pub fn update_fast_lane_config(
     params: UpdateFastLaneParams,
 ) -> Result<()> {
     let config = &mut ctx.accounts.fast_lane_config;
-    
+
     if let Some(max_amount) = params.max_amount {
         config.max_amount = max_amount;
     }
@@ -132,7 +136,7 @@ pub fn update_fast_lane_config(
     if let Some(active) = params.is_active {
         config.is_active = active;
     }
-    
+
     Ok(())
 }
 
@@ -179,36 +183,36 @@ pub fn process_fast_lane(ctx: Context<ProcessFastLane>) -> Result<bool> {
     let config = &ctx.accounts.fast_lane_config;
     let claim = &mut ctx.accounts.claim;
     let tracker = &mut ctx.accounts.tracker;
-    
+
     // Initialize tracker if new
     if tracker.member == Pubkey::default() {
         tracker.member = claim.member;
         tracker.period_start = clock.unix_timestamp;
         tracker.bump = ctx.bumps.tracker;
     }
-    
+
     // Check eligibility
     let eligible = check_fast_lane_eligibility(config, claim, tracker, clock.unix_timestamp)?;
-    
+
     if !eligible {
         // Route to AI triage (Tier 2)
         claim.status = ClaimStatus::UnderReview;
         claim.status_changed_at = clock.unix_timestamp;
         return Ok(false);
     }
-    
+
     // Auto-approve
     claim.status = ClaimStatus::Approved;
     claim.approved_amount = claim.requested_amount;
     claim.status_changed_at = clock.unix_timestamp;
-    
+
     // Update tracker
     tracker.record_claim(claim.requested_amount, config, clock.unix_timestamp);
-    
+
     // Update config stats (would need mut, simplified here)
     // In production: config.total_fast_lane_approvals += 1;
     // config.total_fast_lane_paid += claim.requested_amount;
-    
+
     emit!(FastLaneApproved {
         claim_id: claim.claim_id,
         member: claim.member,
@@ -217,7 +221,7 @@ pub fn process_fast_lane(ctx: Context<ProcessFastLane>) -> Result<bool> {
         monthly_usage: 0, // tracked separately in FastLaneTracker
         timestamp: clock.unix_timestamp,
     });
-    
+
     Ok(true)
 }
 
@@ -232,28 +236,28 @@ fn check_fast_lane_eligibility(
     if claim.requested_amount > config.max_amount {
         return Ok(false);
     }
-    
+
     // Check category eligibility
     let category_code = claim.category as u8;
     if !config.eligible_categories.contains(&category_code) {
         return Ok(false);
     }
-    
+
     // Check member's fast-lane usage
     if !tracker.can_use_fast_lane(config, current_time) {
         return Ok(false);
     }
-    
+
     // Check if flagged
     if tracker.flagged {
         return Ok(false);
     }
-    
+
     // Check if shock claim
     if claim.is_shock_claim {
         return Ok(false);
     }
-    
+
     Ok(true)
 }
 

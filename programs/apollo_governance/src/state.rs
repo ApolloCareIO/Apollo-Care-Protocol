@@ -105,10 +105,7 @@ impl Multisig {
 
     /// Verify that required threshold of signers have signed
     pub fn verify_signatures(&self, signers_present: &[Pubkey]) -> bool {
-        let valid_count = signers_present
-            .iter()
-            .filter(|s| self.is_signer(s))
-            .count();
+        let valid_count = signers_present.iter().filter(|s| self.is_signer(s)).count();
         valid_count >= self.threshold as usize
     }
 }

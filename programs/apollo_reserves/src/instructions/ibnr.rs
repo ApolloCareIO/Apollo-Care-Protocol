@@ -1,9 +1,9 @@
 // programs/apollo_reserves/src/instructions/ibnr.rs
 
-use anchor_lang::prelude::*;
-use crate::state::{ReserveConfig, ReserveState, IbnrParams, RunoffState};
 use crate::errors::ReserveError;
-use crate::events::{IbnrUpdated, ExpectedClaimsUpdated, RunoffFunded, RunoffModeActivated};
+use crate::events::{ExpectedClaimsUpdated, IbnrUpdated, RunoffFunded, RunoffModeActivated};
+use crate::state::{IbnrParams, ReserveConfig, ReserveState, RunoffState};
+use anchor_lang::prelude::*;
 
 /// Compute and update IBNR reserve
 /// IBNR = (Avg Daily Claims × Reporting Lag Days) × Development Factor
@@ -114,7 +114,10 @@ pub fn update_expected_claims(
     let state = &mut ctx.accounts.reserve_state;
     let ibnr = &mut ctx.accounts.ibnr_params;
 
-    require!(params.avg_daily_claims_30d > 0, ReserveError::ZeroExpectedClaims);
+    require!(
+        params.avg_daily_claims_30d > 0,
+        ReserveError::ZeroExpectedClaims
+    );
 
     let old_expected = state.expected_daily_claims;
 
@@ -183,7 +186,10 @@ pub fn update_ibnr_params(
     development_factor_bps: u16,
 ) -> Result<()> {
     require!(reporting_lag > 0, ReserveError::InvalidIbnrParams);
-    require!(development_factor_bps >= 10000, ReserveError::InvalidDevFactor);
+    require!(
+        development_factor_bps >= 10000,
+        ReserveError::InvalidDevFactor
+    );
 
     let clock = Clock::get()?;
     let params = &mut ctx.accounts.ibnr_params;
@@ -306,7 +312,10 @@ pub struct SetRunoffParamsInput {
     pub winddown_months: Option<u8>,
 }
 
-pub fn set_runoff_params(ctx: Context<SetRunoffParams>, params: SetRunoffParamsInput) -> Result<()> {
+pub fn set_runoff_params(
+    ctx: Context<SetRunoffParams>,
+    params: SetRunoffParamsInput,
+) -> Result<()> {
     let runoff = &mut ctx.accounts.runoff_state;
     let reserve_state = &ctx.accounts.reserve_state;
 

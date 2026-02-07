@@ -5,10 +5,10 @@
 // 2. AI-Assisted Triage (medium claims, fraud detection)
 // 3. Committee Escalation (large/complex claims)
 
-use anchor_lang::prelude::*;
-use crate::state::{ClaimsConfig, ClaimAccount, ClaimStatus, ClaimCategory};
 use crate::errors::ClaimsError;
 use crate::events::ClaimStatusChanged;
+use crate::state::{ClaimAccount, ClaimCategory, ClaimStatus, ClaimsConfig};
+use anchor_lang::prelude::*;
 
 // =============================================================================
 // AI ORACLE STATE
@@ -21,56 +21,56 @@ use crate::events::ClaimStatusChanged;
 pub struct AiOracle {
     /// Authority (DAO or Actuarial Committee)
     pub authority: Pubkey,
-    
+
     /// List of authorized oracle signers (can submit AI decisions)
     #[max_len(5)]
     pub authorized_signers: Vec<Pubkey>,
-    
+
     /// Required signatures for AI decision to be accepted
     pub required_sigs: u8,
-    
+
     /// Total decisions processed
     pub total_decisions: u64,
-    
+
     /// Decisions that were auto-approved
     pub auto_approved: u64,
-    
+
     /// Decisions that were auto-denied
     pub auto_denied: u64,
-    
+
     /// Decisions escalated to committee
     pub escalated_to_committee: u64,
-    
+
     /// Decisions overturned by committee (accuracy tracking)
     pub decisions_overturned: u64,
-    
+
     /// Oracle accuracy rate (bps) - updated periodically
     pub accuracy_rate_bps: u16,
-    
+
     /// Minimum confidence for auto-approval (bps, e.g., 9500 = 95%)
     pub min_auto_approve_confidence_bps: u16,
-    
+
     /// Maximum fraud score for auto-approval (bps, e.g., 3000 = 30%)
     pub max_fraud_score_for_approval_bps: u16,
-    
+
     /// Minimum confidence for any decision (below this = committee)
     pub min_confidence_threshold_bps: u16,
-    
+
     /// Is oracle active
     pub is_active: bool,
-    
+
     /// Bump seed
     pub bump: u8,
 }
 
 impl AiOracle {
     pub const SEED_PREFIX: &'static [u8] = b"ai_oracle";
-    
+
     // Bootstrap defaults - more conservative
     pub const DEFAULT_MIN_AUTO_APPROVE_CONFIDENCE: u16 = 9500; // 95%
     pub const DEFAULT_MAX_FRAUD_SCORE: u16 = 3000; // 30%
     pub const DEFAULT_MIN_CONFIDENCE: u16 = 7000; // 70%
-    
+
     pub fn is_authorized_signer(&self, signer: &Pubkey) -> bool {
         self.authorized_signers.contains(signer)
     }
@@ -83,38 +83,38 @@ impl AiOracle {
 pub struct AiDecision {
     /// Claim this decision is for
     pub claim_id: u64,
-    
+
     /// Decision type
     pub decision: AiDecisionType,
-    
+
     /// Overall confidence score (bps)
     pub confidence_bps: u16,
-    
+
     /// Price reasonableness score (bps, 10000 = perfectly reasonable)
     pub price_score_bps: u16,
-    
+
     /// Fraud risk score (bps, 0 = no risk, 10000 = certain fraud)
     pub fraud_score_bps: u16,
-    
+
     /// Procedure-diagnosis consistency score (bps)
     pub consistency_score_bps: u16,
-    
+
     /// Suggested approved amount (may differ from requested)
     pub suggested_amount: u64,
-    
+
     /// Flags raised by AI (up to 5)
     #[max_len(5, 64)]
     pub flags: Vec<String>,
-    
+
     /// Oracle signer who submitted this decision
     pub submitted_by: Pubkey,
-    
+
     /// Timestamp of decision
     pub decided_at: i64,
-    
+
     /// Was this decision overturned by committee?
     pub overturned: bool,
-    
+
     /// Bump seed
     pub bump: u8,
 }
@@ -210,10 +210,10 @@ pub struct InitializeAiOracle<'info> {
         bump
     )]
     pub ai_oracle: Account<'info, AiOracle>,
-    
+
     #[account(mut)]
     pub authority: Signer<'info>,
-    
+
     pub system_program: Program<'info, System>,
 }
 
@@ -222,9 +222,12 @@ pub fn initialize_ai_oracle(
     authorized_signers: Vec<Pubkey>,
     required_sigs: u8,
 ) -> Result<()> {
-    require!(authorized_signers.len() >= required_sigs as usize, ClaimsError::InvalidConfiguration);
+    require!(
+        authorized_signers.len() >= required_sigs as usize,
+        ClaimsError::InvalidConfiguration
+    );
     require!(required_sigs > 0, ClaimsError::InvalidConfiguration);
-    
+
     let oracle = &mut ctx.accounts.ai_oracle;
     oracle.authority = ctx.accounts.authority.key();
     oracle.authorized_signers = authorized_signers;
@@ -240,7 +243,7 @@ pub fn initialize_ai_oracle(
     oracle.min_confidence_threshold_bps = AiOracle::DEFAULT_MIN_CONFIDENCE;
     oracle.is_active = true;
     oracle.bump = ctx.bumps.ai_oracle;
-    
+
     Ok(())
 }
 
@@ -255,14 +258,14 @@ pub struct SubmitAiDecision<'info> {
         constraint = ai_oracle.is_authorized_signer(&oracle_signer.key()) @ ClaimsError::Unauthorized
     )]
     pub ai_oracle: Account<'info, AiOracle>,
-    
+
     #[account(
         mut,
         seeds = [ClaimsConfig::SEED_PREFIX],
         bump = claims_config.bump,
     )]
     pub claims_config: Account<'info, ClaimsConfig>,
-    
+
     #[account(
         mut,
         seeds = [ClaimAccount::SEED_PREFIX, &claim_id.to_le_bytes()],
@@ -270,7 +273,7 @@ pub struct SubmitAiDecision<'info> {
         constraint = claim.status == ClaimStatus::UnderReview @ ClaimsError::InvalidClaimStatus
     )]
     pub claim: Account<'info, ClaimAccount>,
-    
+
     #[account(
         init,
         payer = oracle_signer,
@@ -279,10 +282,10 @@ pub struct SubmitAiDecision<'info> {
         bump
     )]
     pub ai_decision: Account<'info, AiDecision>,
-    
+
     #[account(mut)]
     pub oracle_signer: Signer<'info>,
-    
+
     pub system_program: Program<'info, System>,
 }
 
@@ -297,15 +300,12 @@ pub struct AiDecisionParams {
     pub flags: Vec<String>,
 }
 
-pub fn submit_ai_decision(
-    ctx: Context<SubmitAiDecision>,
-    params: AiDecisionParams,
-) -> Result<()> {
+pub fn submit_ai_decision(ctx: Context<SubmitAiDecision>, params: AiDecisionParams) -> Result<()> {
     let clock = Clock::get()?;
     let oracle = &ctx.accounts.ai_oracle;
     let claim = &mut ctx.accounts.claim;
     let ai_decision = &mut ctx.accounts.ai_decision;
-    
+
     // Determine decision based on scores and thresholds
     let decision = determine_ai_decision(
         params.confidence_bps,
@@ -315,7 +315,7 @@ pub fn submit_ai_decision(
         oracle.min_confidence_threshold_bps,
         &params.flags,
     );
-    
+
     // Record decision
     ai_decision.claim_id = params.claim_id;
     ai_decision.decision = decision.clone();
@@ -329,31 +329,31 @@ pub fn submit_ai_decision(
     ai_decision.decided_at = clock.unix_timestamp;
     ai_decision.overturned = false;
     ai_decision.bump = ctx.bumps.ai_decision;
-    
+
     // Update claim status based on decision
     let old_status = claim.status;
     match &decision {
         AiDecisionType::AutoApprove => {
             claim.status = ClaimStatus::Approved;
             claim.approved_amount = params.suggested_amount;
-        },
+        }
         AiDecisionType::AutoDeny { .. } => {
             claim.status = ClaimStatus::Denied;
             // denial_reason would be set from the decision
-        },
+        }
         AiDecisionType::CommitteeReview => {
             claim.status = ClaimStatus::PendingAttestation;
-        },
+        }
     }
     claim.status_changed_at = clock.unix_timestamp;
-    
+
     emit!(ClaimStatusChanged {
         claim_id: params.claim_id,
         old_status,
         new_status: claim.status,
         timestamp: clock.unix_timestamp,
     });
-    
+
     Ok(())
 }
 
@@ -372,20 +372,20 @@ fn determine_ai_decision(
             reason: "High fraud probability detected".to_string(),
         };
     }
-    
+
     // High confidence + low fraud = auto-approve
-    if confidence_bps >= min_auto_approve_confidence 
+    if confidence_bps >= min_auto_approve_confidence
         && fraud_score_bps <= max_fraud_for_approval
         && flags.is_empty()
     {
         return AiDecisionType::AutoApprove;
     }
-    
+
     // Low confidence = committee review
     if confidence_bps < min_confidence_threshold {
         return AiDecisionType::CommitteeReview;
     }
-    
+
     // Medium confidence or flags present = committee review
     AiDecisionType::CommitteeReview
 }
@@ -401,7 +401,7 @@ pub struct ProcessFastLane<'info> {
         constraint = claims_config.is_active @ ClaimsError::ClaimsPaused
     )]
     pub claims_config: Account<'info, ClaimsConfig>,
-    
+
     #[account(
         mut,
         seeds = [ClaimAccount::SEED_PREFIX, &claim_id.to_le_bytes()],
@@ -409,7 +409,7 @@ pub struct ProcessFastLane<'info> {
         constraint = claim.status == ClaimStatus::Submitted @ ClaimsError::InvalidClaimStatus
     )]
     pub claim: Account<'info, ClaimAccount>,
-    
+
     #[account(
         init_if_needed,
         payer = processor,
@@ -422,31 +422,35 @@ pub struct ProcessFastLane<'info> {
         bump
     )]
     pub fast_lane_usage: Account<'info, FastLaneUsage>,
-    
+
     #[account(mut)]
     pub processor: Signer<'info>,
-    
+
     pub system_program: Program<'info, System>,
 }
 
-pub fn process_fast_lane(ctx: Context<ProcessFastLane>, claim_id: u64, _month_start: i64) -> Result<()> {
+pub fn process_fast_lane(
+    ctx: Context<ProcessFastLane>,
+    claim_id: u64,
+    _month_start: i64,
+) -> Result<()> {
     let clock = Clock::get()?;
     let config = &mut ctx.accounts.claims_config;
     let claim = &mut ctx.accounts.claim;
     let usage = &mut ctx.accounts.fast_lane_usage;
-    
+
     // Check fast-lane eligibility
     require!(
         claim.requested_amount <= config.auto_approve_threshold,
         ClaimsError::ExceedsFastLaneLimit
     );
-    
+
     // Check eligible categories (basic check - can expand)
     require!(
         is_fast_lane_category(&claim.category),
         ClaimsError::CategoryNotEligible
     );
-    
+
     // Check monthly usage limit
     let month_start = get_month_start(clock.unix_timestamp);
     if usage.month_start != month_start {
@@ -456,32 +460,32 @@ pub fn process_fast_lane(ctx: Context<ProcessFastLane>, claim_id: u64, _month_st
         usage.claims_used = 0;
         usage.amount_claimed = 0;
     }
-    
+
     require!(
         usage.claims_used < 5, // Max 5 fast-lane per month
         ClaimsError::FastLaneLimitExceeded
     );
-    
+
     // Approve via fast-lane
     let old_status = claim.status;
     claim.status = ClaimStatus::Approved;
     claim.approved_amount = claim.requested_amount;
     claim.status_changed_at = clock.unix_timestamp;
-    
+
     // Update usage tracking
     usage.claims_used += 1;
     usage.amount_claimed = usage.amount_claimed.saturating_add(claim.requested_amount);
-    
+
     // Update config stats
     config.total_claims_approved += 1;
-    
+
     emit!(ClaimStatusChanged {
         claim_id,
         old_status,
         new_status: ClaimStatus::Approved,
         timestamp: clock.unix_timestamp,
     });
-    
+
     // Emit fast-lane specific event
     emit!(FastLaneApproved {
         claim_id,
@@ -491,7 +495,7 @@ pub fn process_fast_lane(ctx: Context<ProcessFastLane>, claim_id: u64, _month_st
         monthly_usage: usage.claims_used,
         timestamp: clock.unix_timestamp,
     });
-    
+
     Ok(())
 }
 
@@ -499,11 +503,11 @@ pub fn process_fast_lane(ctx: Context<ProcessFastLane>, claim_id: u64, _month_st
 fn is_fast_lane_category(category: &ClaimCategory) -> bool {
     matches!(
         category,
-        ClaimCategory::PrimaryCare |
-        ClaimCategory::Prescription |
-        ClaimCategory::Laboratory |
-        ClaimCategory::Preventive |
-        ClaimCategory::DiagnosticImaging
+        ClaimCategory::PrimaryCare
+            | ClaimCategory::Prescription
+            | ClaimCategory::Laboratory
+            | ClaimCategory::Preventive
+            | ClaimCategory::DiagnosticImaging
     )
 }
 
@@ -525,7 +529,7 @@ pub struct MarkDecisionOverturned<'info> {
         bump = ai_oracle.bump,
     )]
     pub ai_oracle: Account<'info, AiOracle>,
-    
+
     #[account(
         mut,
         seeds = [AiDecision::SEED_PREFIX, &claim_id.to_le_bytes()],
@@ -533,7 +537,7 @@ pub struct MarkDecisionOverturned<'info> {
         constraint = !ai_decision.overturned @ ClaimsError::AlreadyOverturned
     )]
     pub ai_decision: Account<'info, AiDecision>,
-    
+
     /// Must be committee or DAO
     #[account(
         constraint = authority.key() == ai_oracle.authority @ ClaimsError::Unauthorized
@@ -541,19 +545,23 @@ pub struct MarkDecisionOverturned<'info> {
     pub authority: Signer<'info>,
 }
 
-pub fn mark_decision_overturned(ctx: Context<MarkDecisionOverturned>, _claim_id: u64) -> Result<()> {
+pub fn mark_decision_overturned(
+    ctx: Context<MarkDecisionOverturned>,
+    _claim_id: u64,
+) -> Result<()> {
     let oracle = &mut ctx.accounts.ai_oracle;
     let decision = &mut ctx.accounts.ai_decision;
-    
+
     decision.overturned = true;
     oracle.decisions_overturned += 1;
-    
+
     // Update accuracy rate
     if oracle.total_decisions > 0 {
         let accurate = oracle.total_decisions - oracle.decisions_overturned;
-        oracle.accuracy_rate_bps = ((accurate as u128 * 10000) / oracle.total_decisions as u128) as u16;
+        oracle.accuracy_rate_bps =
+            ((accurate as u128 * 10000) / oracle.total_decisions as u128) as u16;
     }
-    
+
     Ok(())
 }
 

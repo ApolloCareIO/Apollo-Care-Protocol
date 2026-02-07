@@ -1,10 +1,12 @@
 // programs/apollo_risk_engine/src/instructions/zones.rs
 
-use anchor_lang::prelude::*;
-use crate::state::{RiskConfig, CarState, ZoneState, Zone};
 use crate::errors::RiskEngineError;
-use crate::events::{ShockFactorUpdated, EnrollmentCapsUpdated, EnrollmentRecorded,
-                    EnrollmentFreezeToggled, ZoneThresholdsUpdated};
+use crate::events::{
+    EnrollmentCapsUpdated, EnrollmentFreezeToggled, EnrollmentRecorded, ShockFactorUpdated,
+    ZoneThresholdsUpdated,
+};
+use crate::state::{CarState, RiskConfig, Zone, ZoneState};
+use anchor_lang::prelude::*;
 
 /// Set ShockFactor (zone-gated)
 #[derive(Accounts)]
@@ -37,7 +39,10 @@ pub fn set_shock_factor(ctx: Context<SetShockFactor>, new_shock_factor_bps: u16)
     let config = &mut ctx.accounts.risk_config;
     let zone = &ctx.accounts.zone_state;
 
-    require!(new_shock_factor_bps >= 10000, RiskEngineError::InvalidBasisPoints); // Min 1.0x
+    require!(
+        new_shock_factor_bps >= 10000,
+        RiskEngineError::InvalidBasisPoints
+    ); // Min 1.0x
 
     let old_shock = config.shock_factor_bps;
     let current_zone = zone.current_zone;
@@ -53,7 +58,7 @@ pub fn set_shock_factor(ctx: Context<SetShockFactor>, new_shock_factor_bps: u16)
             } else {
                 (config.max_auto_shock_factor_bps, false)
             }
-        },
+        }
         Zone::Red => {
             // Up to 2.0x requires DAO emergency
             if new_shock_factor_bps > config.max_committee_shock_factor_bps {
@@ -124,7 +129,10 @@ pub struct SetEnrollmentCapsParams {
     pub orange_cap: Option<u32>,
 }
 
-pub fn set_enrollment_caps(ctx: Context<SetEnrollmentCaps>, params: SetEnrollmentCapsParams) -> Result<()> {
+pub fn set_enrollment_caps(
+    ctx: Context<SetEnrollmentCaps>,
+    params: SetEnrollmentCapsParams,
+) -> Result<()> {
     let clock = Clock::get()?;
     let zone_state = &mut ctx.accounts.zone_state;
 
@@ -215,8 +223,14 @@ pub fn record_enrollment(ctx: Context<RecordEnrollment>) -> Result<()> {
     let zone_state = &mut ctx.accounts.zone_state;
 
     // Check enrollment is allowed
-    require!(!zone_state.enrollment_frozen, RiskEngineError::EnrollmentFrozen);
-    require!(zone_state.can_enroll(), RiskEngineError::EnrollmentCapExceeded);
+    require!(
+        !zone_state.enrollment_frozen,
+        RiskEngineError::EnrollmentFrozen
+    );
+    require!(
+        zone_state.can_enroll(),
+        RiskEngineError::EnrollmentCapExceeded
+    );
 
     // Reset counter if new month
     const MONTH_SECONDS: i64 = 30 * 24 * 60 * 60;

@@ -1,9 +1,9 @@
 // programs/apollo_claims/src/instructions/initialize.rs
 
-use anchor_lang::prelude::*;
-use crate::state::{ClaimsConfig, BenefitSchedule, AttestorRegistry, CategoryLimit};
 use crate::errors::ClaimsError;
-use crate::events::{ClaimsConfigInitialized, BenefitScheduleUpdated};
+use crate::events::{BenefitScheduleUpdated, ClaimsConfigInitialized};
+use crate::state::{AttestorRegistry, BenefitSchedule, CategoryLimit, ClaimsConfig};
+use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 pub struct InitializeClaimsConfig<'info> {
@@ -53,11 +53,14 @@ pub fn handler(ctx: Context<InitializeClaimsConfig>, params: InitializeClaimsPar
     config.total_claims_approved = 0;
     config.total_claims_denied = 0;
     config.total_paid_out = 0;
-    config.auto_approve_threshold = params.auto_approve_threshold
+    config.auto_approve_threshold = params
+        .auto_approve_threshold
         .unwrap_or(ClaimsConfig::DEFAULT_AUTO_APPROVE);
-    config.shock_claim_threshold = params.shock_claim_threshold
+    config.shock_claim_threshold = params
+        .shock_claim_threshold
         .unwrap_or(ClaimsConfig::DEFAULT_SHOCK_THRESHOLD);
-    config.required_attestations = params.required_attestations
+    config.required_attestations = params
+        .required_attestations
         .unwrap_or(ClaimsConfig::DEFAULT_REQUIRED_ATTESTATIONS);
     config.max_attestation_time = ClaimsConfig::DEFAULT_MAX_ATTESTATION_TIME;
     config.is_active = true;
@@ -129,9 +132,18 @@ pub fn set_benefit_schedule(
 ) -> Result<()> {
     let clock = Clock::get()?;
 
-    require!(params.coinsurance_bps <= 10000, ClaimsError::InvalidBenefitSchedule);
-    require!(params.individual_annual_max > 0, ClaimsError::InvalidBenefitSchedule);
-    require!(params.family_annual_max >= params.individual_annual_max, ClaimsError::InvalidBenefitSchedule);
+    require!(
+        params.coinsurance_bps <= 10000,
+        ClaimsError::InvalidBenefitSchedule
+    );
+    require!(
+        params.individual_annual_max > 0,
+        ClaimsError::InvalidBenefitSchedule
+    );
+    require!(
+        params.family_annual_max >= params.individual_annual_max,
+        ClaimsError::InvalidBenefitSchedule
+    );
 
     let schedule = &mut ctx.accounts.benefit_schedule;
     schedule.name = params.name.clone();

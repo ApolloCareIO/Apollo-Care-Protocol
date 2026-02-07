@@ -1,10 +1,10 @@
 // programs/apollo_reserves/src/instructions/vaults.rs
 
-use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Token, TokenAccount, Mint};
-use crate::state::{ReserveConfig, VaultAuthority};
 use crate::errors::ReserveError;
 use crate::events::VaultsCreated;
+use crate::state::{ReserveConfig, VaultAuthority};
+use anchor_lang::prelude::*;
+use anchor_spl::token::{self, Mint, Token, TokenAccount};
 
 /// Create all reserve vaults
 #[derive(Accounts)]

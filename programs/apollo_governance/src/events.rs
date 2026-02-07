@@ -1,7 +1,7 @@
 // programs/apollo_governance/src/events.rs
 
-use anchor_lang::prelude::*;
 use crate::state::{AdminAction, CommitteeType};
+use anchor_lang::prelude::*;
 
 /// Emitted when DAO is initialized
 #[event]

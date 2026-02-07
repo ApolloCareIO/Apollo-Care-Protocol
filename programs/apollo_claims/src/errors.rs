@@ -84,41 +84,41 @@ pub enum ClaimsError {
 
     #[msg("Maximum attestors reached")]
     MaxAttestorsReached,
-    
+
     // AI Processing Errors
     #[msg("AI Oracle is inactive")]
     OracleInactive,
-    
+
     #[msg("AI Oracle is disabled")]
     OracleDisabled,
-    
+
     #[msg("Invalid oracle configuration")]
     InvalidConfiguration,
-    
+
     #[msg("Insufficient oracle signers configured")]
     InsufficientSigners,
-    
+
     #[msg("Claim exceeds fast-lane limit")]
     ExceedsFastLaneLimit,
-    
+
     #[msg("Category not eligible for fast-lane")]
     CategoryNotEligible,
-    
+
     #[msg("Monthly fast-lane limit exceeded")]
     FastLaneLimitExceeded,
-    
+
     #[msg("Fast-lane processing is disabled")]
     FastLaneDisabled,
-    
+
     #[msg("AI decision already recorded for this claim")]
     DecisionAlreadyRecorded,
-    
+
     #[msg("Decision already overturned")]
     AlreadyOverturned,
-    
+
     #[msg("Fraud detected - claim denied")]
     FraudDetected,
-    
+
     #[msg("Member flagged for excessive fast-lane usage")]
     MemberFlagged,
 }

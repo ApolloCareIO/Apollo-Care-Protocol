@@ -4,13 +4,13 @@
 // Tier 2 of three-tier claims processing
 // ML-assisted triage for medium complexity claims
 
-use anchor_lang::prelude::*;
 use crate::ai_oracle::{
-    ClaimsOracle, AiDecision, AiDecisionType, AiFlag, UcrReference,
-    RegionalPriceFactor, AiDecisionSubmitted, AiDecisionOverturned,
+    AiDecision, AiDecisionOverturned, AiDecisionSubmitted, AiDecisionType, AiFlag, ClaimsOracle,
+    RegionalPriceFactor, UcrReference,
 };
-use crate::state::{ClaimsConfig, ClaimAccount, ClaimStatus};
 use crate::errors::ClaimsError;
+use crate::state::{ClaimAccount, ClaimStatus, ClaimsConfig};
+use anchor_lang::prelude::*;
 
 // =============================================================================
 // INITIALIZATION
@@ -59,12 +59,12 @@ pub fn initialize_claims_oracle(
     params: InitializeOracleParams,
 ) -> Result<()> {
     let oracle = &mut ctx.accounts.claims_oracle;
-    
+
     require!(
         params.authorized_signers.len() >= params.required_sigs as usize,
         ClaimsError::InsufficientSigners
     );
-    
+
     oracle.authority = ctx.accounts.authority.key();
     oracle.authorized_signers = params.authorized_signers;
     oracle.required_sigs = params.required_sigs;
@@ -80,7 +80,7 @@ pub fn initialize_claims_oracle(
     oracle.is_active = true;
     oracle.last_decision_at = 0;
     oracle.bump = ctx.bumps.claims_oracle;
-    
+
     Ok(())
 }
 
@@ -146,16 +146,13 @@ pub struct AiDecisionParams {
     pub reference_price: u64,
 }
 
-pub fn submit_ai_decision(
-    ctx: Context<SubmitAiDecision>,
-    params: AiDecisionParams,
-) -> Result<()> {
+pub fn submit_ai_decision(ctx: Context<SubmitAiDecision>, params: AiDecisionParams) -> Result<()> {
     let clock = Clock::get()?;
     let oracle = &mut ctx.accounts.claims_oracle;
     let ai_decision = &mut ctx.accounts.ai_decision;
     let claim = &mut ctx.accounts.claim;
     let config = &mut ctx.accounts.claims_config;
-    
+
     // Record the AI decision
     ai_decision.claim_id = params.claim_id;
     ai_decision.decision = params.decision;
@@ -171,11 +168,11 @@ pub fn submit_ai_decision(
     ai_decision.overturned = false;
     ai_decision.overturn_reason = String::new();
     ai_decision.bump = ctx.bumps.ai_decision;
-    
+
     // Update oracle stats
     oracle.total_decisions += 1;
     oracle.last_decision_at = clock.unix_timestamp;
-    
+
     // Execute the decision on the claim
     match params.decision {
         AiDecisionType::AutoApprove => {
@@ -183,26 +180,27 @@ pub fn submit_ai_decision(
             claim.approved_amount = params.suggested_amount;
             oracle.auto_approved += 1;
             config.total_claims_approved += 1;
-        },
+        }
         AiDecisionType::AutoDeny => {
             claim.status = ClaimStatus::Denied;
-            claim.denial_reason = format!("AI denial: High fraud risk ({}bps)", params.fraud_score_bps);
+            claim.denial_reason =
+                format!("AI denial: High fraud risk ({}bps)", params.fraud_score_bps);
             oracle.auto_denied += 1;
             config.total_claims_denied += 1;
-        },
+        }
         AiDecisionType::CommitteeReview => {
             claim.status = ClaimStatus::PendingAttestation;
             oracle.escalated += 1;
-        },
+        }
         AiDecisionType::RequestInfo => {
             // Keep in UnderReview, member needs to provide more info
             // In production, this would trigger a notification
             oracle.escalated += 1;
-        },
+        }
     }
-    
+
     claim.status_changed_at = clock.unix_timestamp;
-    
+
     emit!(AiDecisionSubmitted {
         claim_id: params.claim_id,
         decision: params.decision,
@@ -212,7 +210,7 @@ pub fn submit_ai_decision(
         oracle_signer: ctx.accounts.oracle_signer.key(),
         timestamp: clock.unix_timestamp,
     });
-    
+
     Ok(())
 }
 
@@ -264,37 +262,37 @@ pub fn overturn_ai_decision(
     let oracle = &mut ctx.accounts.claims_oracle;
     let ai_decision = &mut ctx.accounts.ai_decision;
     let claim = &mut ctx.accounts.claim;
-    
+
     let original_decision = ai_decision.decision;
-    
+
     // Mark as overturned
     ai_decision.overturned = true;
     ai_decision.overturn_reason = reason.clone();
-    
+
     // Update oracle stats
     oracle.decisions_overturned += 1;
     oracle.update_accuracy();
-    
+
     // Apply new decision to claim
     match new_decision {
         AiDecisionType::AutoApprove => {
             claim.status = ClaimStatus::Approved;
             claim.approved_amount = ai_decision.suggested_amount;
-        },
+        }
         AiDecisionType::AutoDeny => {
             claim.status = ClaimStatus::Denied;
             claim.denial_reason = reason.clone();
-        },
+        }
         AiDecisionType::CommitteeReview => {
             claim.status = ClaimStatus::PendingAttestation;
-        },
+        }
         AiDecisionType::RequestInfo => {
             claim.status = ClaimStatus::UnderReview;
-        },
+        }
     }
-    
+
     claim.status_changed_at = clock.unix_timestamp;
-    
+
     emit!(AiDecisionOverturned {
         claim_id: ai_decision.claim_id,
         original_decision,
@@ -303,7 +301,7 @@ pub fn overturn_ai_decision(
         overturned_by: ctx.accounts.authority.key(),
         timestamp: clock.unix_timestamp,
     });
-    
+
     Ok(())
 }
 
@@ -355,7 +353,7 @@ pub fn update_ucr_reference(
 ) -> Result<()> {
     let clock = Clock::get()?;
     let ucr = &mut ctx.accounts.ucr_reference;
-    
+
     ucr.procedure_code = params.procedure_code;
     ucr.base_price = params.base_price;
     ucr.price_low = params.price_low;
@@ -364,7 +362,7 @@ pub fn update_ucr_reference(
     ucr.last_updated = clock.unix_timestamp;
     ucr.source_hash = params.source_hash;
     ucr.bump = ctx.bumps.ucr_reference;
-    
+
     Ok(())
 }
 

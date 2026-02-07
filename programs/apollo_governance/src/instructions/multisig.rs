@@ -1,12 +1,11 @@
 // programs/apollo_governance/src/instructions/multisig.rs
 
-use anchor_lang::prelude::*;
-use crate::state::{DaoConfig, Multisig, SignerSet, AdminAction};
 use crate::errors::GovernanceError;
 use crate::events::{
-    MultisigCreated, SignerAdded, SignerRemoved,
-    ThresholdUpdated, ActionApproved, ActionExecuted
+    ActionApproved, ActionExecuted, MultisigCreated, SignerAdded, SignerRemoved, ThresholdUpdated,
 };
+use crate::state::{AdminAction, DaoConfig, Multisig, SignerSet};
+use anchor_lang::prelude::*;
 
 /// Create a new multisig
 #[derive(Accounts)]
@@ -272,7 +271,10 @@ pub struct CreateSignerSetParams {
     pub expiry_seconds: Option<i64>,
 }
 
-pub fn create_signer_set(ctx: Context<CreateSignerSet>, params: CreateSignerSetParams) -> Result<()> {
+pub fn create_signer_set(
+    ctx: Context<CreateSignerSet>,
+    params: CreateSignerSetParams,
+) -> Result<()> {
     let clock = Clock::get()?;
     let expiry = params.expiry_seconds.unwrap_or(SignerSet::DEFAULT_EXPIRY);
 
