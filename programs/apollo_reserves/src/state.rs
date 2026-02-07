@@ -256,7 +256,7 @@ impl IbnrParams {
 }
 
 /// Waterfall execution log - tracks payout sources
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum WaterfallSource {
     Tier0,
     Tier1,
@@ -431,7 +431,7 @@ impl PhaseManager {
 }
 
 /// Protocol phases - HCSM → Hybrid → Licensed
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace, Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace, Default)]
 pub enum ProtocolPhase {
     /// Phase 1: Health Care Sharing Ministry (not insurance)
     #[default]

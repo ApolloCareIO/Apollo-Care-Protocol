@@ -14,7 +14,7 @@ pub struct CreateVaults<'info> {
         bump = reserve_config.bump,
         constraint = reserve_config.is_initialized @ ReserveError::NotInitialized
     )]
-    pub reserve_config: Account<'info, ReserveConfig>,
+    pub reserve_config: Box<Account<'info, ReserveConfig>>,
 
     #[account(
         init,
@@ -23,7 +23,7 @@ pub struct CreateVaults<'info> {
         seeds = [VaultAuthority::SEED_PREFIX],
         bump
     )]
-    pub vault_authority: Account<'info, VaultAuthority>,
+    pub vault_authority: Box<Account<'info, VaultAuthority>>,
 
     /// Tier 0 vault - liquidity buffer
     #[account(
@@ -34,7 +34,7 @@ pub struct CreateVaults<'info> {
         seeds = [b"tier0_vault"],
         bump
     )]
-    pub tier0_vault: Account<'info, TokenAccount>,
+    pub tier0_vault: Box<Account<'info, TokenAccount>>,
 
     /// Tier 1 vault - operating reserve
     #[account(
@@ -45,7 +45,7 @@ pub struct CreateVaults<'info> {
         seeds = [b"tier1_vault"],
         bump
     )]
-    pub tier1_vault: Account<'info, TokenAccount>,
+    pub tier1_vault: Box<Account<'info, TokenAccount>>,
 
     /// Tier 2 vault - contingent capital
     #[account(
@@ -56,7 +56,7 @@ pub struct CreateVaults<'info> {
         seeds = [b"tier2_vault"],
         bump
     )]
-    pub tier2_vault: Account<'info, TokenAccount>,
+    pub tier2_vault: Box<Account<'info, TokenAccount>>,
 
     /// Run-off reserve vault - segregated emergency fund
     #[account(
@@ -67,7 +67,7 @@ pub struct CreateVaults<'info> {
         seeds = [b"runoff_vault"],
         bump
     )]
-    pub runoff_vault: Account<'info, TokenAccount>,
+    pub runoff_vault: Box<Account<'info, TokenAccount>>,
 
     /// Admin/operations vault
     #[account(
@@ -78,7 +78,7 @@ pub struct CreateVaults<'info> {
         seeds = [b"admin_vault"],
         bump
     )]
-    pub admin_vault: Account<'info, TokenAccount>,
+    pub admin_vault: Box<Account<'info, TokenAccount>>,
 
     #[account(
         constraint = usdc_mint.key() == reserve_config.usdc_mint @ ReserveError::InvalidMint

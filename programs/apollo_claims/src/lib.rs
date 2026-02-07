@@ -98,8 +98,8 @@ pub mod apollo_claims {
     }
 
     /// Process fast-lane auto-approval (small routine claims)
-    pub fn process_fast_lane(ctx: Context<ProcessFastLane>, claim_id: u64) -> Result<()> {
-        instructions::ai_processing::process_fast_lane(ctx, claim_id)
+    pub fn process_fast_lane(ctx: Context<ProcessFastLane>, claim_id: u64, month_start: i64) -> Result<()> {
+        instructions::ai_processing::process_fast_lane(ctx, claim_id, month_start)
     }
 
     /// Mark AI decision as overturned (for accuracy tracking)

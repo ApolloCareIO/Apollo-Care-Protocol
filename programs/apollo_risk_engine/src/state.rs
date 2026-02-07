@@ -381,7 +381,7 @@ impl ZoneState {
 }
 
 /// Zone classification based on CAR
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum Zone {
     /// CAR > 150%: Unlimited enrollment, normal operations
     Green,
@@ -400,7 +400,7 @@ impl Default for Zone {
 }
 
 /// Member risk tier for internal classification
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum MemberRiskTier {
     /// Low risk - healthy, young, no pre-existing conditions
     Low,

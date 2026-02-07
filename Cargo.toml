@@ -21,12 +21,9 @@ repository = "https://github.com/apollocare/apollo-care-protocol"
 authors = ["Apollo Care Team <dev@apollocare.io>"]
 
 [workspace.dependencies]
-# Using Anchor 0.29.0 for Solana 1.18 compatibility
-# Note: 0.30+ requires Rust nightly/edition2024 for some deps
-# Reference: https://solana.com/docs/core/programs
-anchor-lang = { version = "0.29.0", features = ["init-if-needed"] }
-anchor-spl = "0.29.0"
-solana-program = "1.18"
+anchor-lang = { version = "0.32.1", features = ["init-if-needed"] }
+anchor-spl = "0.32.1"
+solana-program = "~2.1"
 
 # Patch problematic edition2024 crates with older versions
 [profile.release]
@@ -38,3 +35,4 @@ codegen-units = 1
 opt-level = 3
 incremental = false
 codegen-units = 1
+

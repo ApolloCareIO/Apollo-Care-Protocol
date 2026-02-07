@@ -140,7 +140,7 @@ impl FraudFlags {
 }
 
 /// AI recommendation for claim processing
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace, Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace, Default)]
 pub enum AiRecommendation {
     /// Auto-approve in full
     AutoApproveFull,
@@ -457,7 +457,7 @@ pub struct CategoryLimit {
 }
 
 /// Claim categories
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum ClaimCategory {
     Emergency,
     Hospitalization,
@@ -537,7 +537,7 @@ impl ClaimAccount {
 }
 
 /// Claim status state machine
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum ClaimStatus {
     /// Just submitted, awaiting review
     Submitted,
@@ -630,7 +630,7 @@ impl Attestation {
 }
 
 /// Attestation recommendation
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum AttestationRecommendation {
     /// Approve in full
     ApproveFull,
@@ -778,7 +778,7 @@ impl AiDecisionRecord {
 }
 
 /// AI decision type
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum AiDecisionType {
     /// Auto-approve - high confidence, low fraud risk
     AutoApprove,
@@ -791,7 +791,7 @@ pub enum AiDecisionType {
 }
 
 /// Flags raised by AI analysis
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum AiFlag {
     /// Price significantly above UCR average
     HighPrice,

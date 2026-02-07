@@ -132,7 +132,7 @@ impl MemberAccount {
 }
 
 /// Member status
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum MemberStatus {
     /// Just enrolled, waiting period not complete
     PendingActivation,
@@ -238,7 +238,7 @@ impl ContributionLedger {
 }
 
 /// Qualifying life events for special enrollment
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum QualifyingEvent {
     /// Loss of other coverage
     LossOfCoverage,

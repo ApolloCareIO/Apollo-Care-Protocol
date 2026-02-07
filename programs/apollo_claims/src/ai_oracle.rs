@@ -144,7 +144,7 @@ impl AiDecision {
 }
 
 /// AI Decision types
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum AiDecisionType {
     /// Auto-approve: High confidence, low fraud risk
     AutoApprove,
@@ -163,7 +163,7 @@ impl Default for AiDecisionType {
 }
 
 /// AI-generated flags for claims
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum AiFlag {
     /// Price significantly above UCR
     PriceAboveUcr,
@@ -452,7 +452,8 @@ pub fn evaluate_claim_for_decision(
 }
 
 // =============================================================================
-// EVENTS
+// =============================================================================
+// EVENTS (canonical definitions — used by oracle.rs)
 // =============================================================================
 
 #[event]
@@ -473,14 +474,5 @@ pub struct AiDecisionOverturned {
     pub new_decision: AiDecisionType,
     pub overturn_reason: String,
     pub overturned_by: Pubkey,
-    pub timestamp: i64,
-}
-
-#[event]
-pub struct FastLaneApproved {
-    pub claim_id: u64,
-    pub member: Pubkey,
-    pub amount: u64,
-    pub category: u8,
     pub timestamp: i64,
 }

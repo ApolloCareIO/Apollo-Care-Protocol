@@ -165,27 +165,8 @@ pub struct FastLaneRestored {
 // =============================================================================
 
 /// Emitted when AI submits a decision for a claim
-#[event]
-pub struct AiDecisionRecorded {
-    pub claim_id: u64,
-    pub decision_type: u8, // AiDecisionType as u8
-    pub confidence_bps: u16,
-    pub fraud_score_bps: u16,
-    pub suggested_amount: u64,
-    pub oracle_signer: Pubkey,
-    pub timestamp: i64,
-}
-
-/// Emitted when an AI decision is overturned by committee
-#[event]
-pub struct AiDecisionOverturned {
-    pub claim_id: u64,
-    pub original_decision: u8,
-    pub new_decision: u8,
-    pub reason: String,
-    pub overturned_by: Pubkey,
-    pub timestamp: i64,
-}
+// AiDecisionSubmitted, AiDecisionOverturned, and AiDecisionRecorded
+// are defined in ai_oracle.rs (canonical) to avoid duplicate discriminators
 
 // =============================================================================
 // PHASE TRANSITION EVENTS

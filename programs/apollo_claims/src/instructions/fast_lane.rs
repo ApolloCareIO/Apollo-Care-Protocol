@@ -5,7 +5,8 @@
 // Instantly approves small routine claims without human review
 
 use anchor_lang::prelude::*;
-use crate::ai_oracle::{FastLaneConfig, FastLaneTracker, FastLaneApproved};
+use crate::ai_oracle::{FastLaneConfig, FastLaneTracker};
+use super::ai_processing::FastLaneApproved;
 use crate::state::{ClaimsConfig, ClaimAccount, ClaimStatus, ClaimCategory};
 use crate::errors::ClaimsError;
 
@@ -212,7 +213,8 @@ pub fn process_fast_lane(ctx: Context<ProcessFastLane>) -> Result<bool> {
         claim_id: claim.claim_id,
         member: claim.member,
         amount: claim.requested_amount,
-        category: claim.category as u8,
+        category: claim.category,
+        monthly_usage: 0, // tracked separately in FastLaneTracker
         timestamp: clock.unix_timestamp,
     });
     

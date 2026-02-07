@@ -220,7 +220,7 @@ impl Proposal {
 }
 
 /// Admin action types for logging and authorization
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum AdminAction {
     // Governance actions
     UpdateDaoConfig,
@@ -264,7 +264,7 @@ pub enum AdminAction {
 }
 
 /// Proposal types for future governance
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum ProposalType {
     ParameterChange,
     EmergencyAction,
@@ -275,7 +275,7 @@ pub enum ProposalType {
 }
 
 /// Proposal status
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum ProposalStatus {
     Draft,
     Active,
@@ -287,7 +287,7 @@ pub enum ProposalStatus {
 }
 
 /// Committee types for authorization
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace)]
 pub enum CommitteeType {
     Risk,
     Actuarial,

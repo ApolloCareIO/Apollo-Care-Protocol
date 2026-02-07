@@ -124,7 +124,7 @@ impl AiDecision {
 }
 
 /// AI decision types
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, InitSpace)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq, Eq, InitSpace)]
 pub enum AiDecisionType {
     /// Auto-approve the claim
     AutoApprove,
@@ -392,7 +392,7 @@ fn determine_ai_decision(
 
 /// Process fast-lane claim (immediate auto-approval for small routine claims)
 #[derive(Accounts)]
-#[instruction(claim_id: u64)]
+#[instruction(claim_id: u64, month_start: i64)]
 pub struct ProcessFastLane<'info> {
     #[account(
         mut,
@@ -417,7 +417,7 @@ pub struct ProcessFastLane<'info> {
         seeds = [
             FastLaneUsage::SEED_PREFIX,
             claim.member.as_ref(),
-            &get_month_start(Clock::get()?.unix_timestamp).to_le_bytes()
+            &month_start.to_le_bytes()
         ],
         bump
     )]
@@ -429,7 +429,7 @@ pub struct ProcessFastLane<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn process_fast_lane(ctx: Context<ProcessFastLane>, claim_id: u64) -> Result<()> {
+pub fn process_fast_lane(ctx: Context<ProcessFastLane>, claim_id: u64, _month_start: i64) -> Result<()> {
     let clock = Clock::get()?;
     let config = &mut ctx.accounts.claims_config;
     let claim = &mut ctx.accounts.claim;
@@ -571,11 +571,4 @@ pub struct FastLaneApproved {
     pub timestamp: i64,
 }
 
-#[event]
-pub struct AiDecisionRecorded {
-    pub claim_id: u64,
-    pub decision_type: String,
-    pub confidence_bps: u16,
-    pub fraud_score_bps: u16,
-    pub timestamp: i64,
-}
+// AiDecisionRecorded is defined in events.rs to avoid duplicate discriminators
