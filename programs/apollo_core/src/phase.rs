@@ -97,8 +97,8 @@ impl ProtocolPhase {
     /// Get maximum individual claim amount for this phase
     pub fn max_individual_claim(&self) -> u64 {
         match self {
-            ProtocolPhase::Phase1Hcsm => 100_000_000_000,    // $100K
-            ProtocolPhase::Phase2Hybrid => 250_000_000_000,   // $250K
+            ProtocolPhase::Phase1Hcsm => 100_000_000_000,   // $100K
+            ProtocolPhase::Phase2Hybrid => 250_000_000_000, // $250K
             ProtocolPhase::Phase3Licensed => 1_000_000_000_000, // $1M
         }
     }
