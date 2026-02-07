@@ -25,21 +25,21 @@ pub enum ProtocolPhase {
     /// - Self-regulated via DAO
     /// - Voluntary cost sharing
     /// - Operates under HCSM exemptions
-    Phase1Hcsm = 1,
+    Phase1Hcsm = 0,
 
     /// Phase 2: Hybrid Model / Regulatory Sandbox
     /// - Insurance pilot in select states
     /// - HCSM continues in parallel
     /// - Working with regulators
     /// - Building compliance infrastructure
-    Phase2Hybrid = 2,
+    Phase2Hybrid = 1,
 
     /// Phase 3: Fully Licensed Insurer
     /// - Licensed insurance carrier
     /// - Full regulatory compliance
     /// - Statutory reserve requirements
     /// - Guaranty fund participation
-    Phase3Licensed = 3,
+    Phase3Licensed = 2,
 }
 
 impl Default for ProtocolPhase {
@@ -92,6 +92,33 @@ impl ProtocolPhase {
             ProtocolPhase::Phase2Hybrid => Some(ProtocolPhase::Phase3Licensed),
             ProtocolPhase::Phase3Licensed => None,
         }
+    }
+
+    /// Get maximum individual claim amount for this phase
+    pub fn max_individual_claim(&self) -> u64 {
+        match self {
+            ProtocolPhase::Phase1Hcsm => 100_000_000_000,    // $100K
+            ProtocolPhase::Phase2Hybrid => 250_000_000_000,   // $250K
+            ProtocolPhase::Phase3Licensed => 1_000_000_000_000, // $1M
+        }
+    }
+
+    /// Whether pre-existing condition exclusions are allowed
+    pub fn preexisting_exclusions_allowed(&self) -> bool {
+        matches!(self, ProtocolPhase::Phase1Hcsm) // HCSMs can exclude; ACA-compliant phases cannot
+    }
+
+    /// Contribution terminology for member communications
+    pub fn contribution_term(&self) -> &'static str {
+        match self {
+            ProtocolPhase::Phase1Hcsm => "monthly share amount",
+            _ => "premium",
+        }
+    }
+
+    /// Whether this phase requires state insurance licenses
+    pub fn requires_license(&self) -> bool {
+        !matches!(self, ProtocolPhase::Phase1Hcsm)
     }
 }
 
@@ -383,6 +410,13 @@ mod tests {
     #[test]
     fn test_phase_defaults() {
         assert_eq!(ProtocolPhase::default(), ProtocolPhase::Phase1Hcsm);
+    }
+
+    #[test]
+    fn test_phase_discriminants() {
+        assert_eq!(ProtocolPhase::Phase1Hcsm as u8, 0);
+        assert_eq!(ProtocolPhase::Phase2Hybrid as u8, 1);
+        assert_eq!(ProtocolPhase::Phase3Licensed as u8, 2);
     }
 
     #[test]

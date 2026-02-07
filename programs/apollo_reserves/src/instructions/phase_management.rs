@@ -41,19 +41,19 @@ pub fn initialize_phase_manager(ctx: Context<InitializePhaseManager>) -> Result<
     let manager = &mut ctx.accounts.phase_manager;
 
     manager.authority = ctx.accounts.authority.key();
-    manager.current_phase = ProtocolPhase::CostSharingMinistry;
+    manager.current_phase = ProtocolPhase::Phase1Hcsm;
     manager.phase1_start = clock.unix_timestamp;
     manager.phase2_start = 0;
     manager.phase3_start = 0;
     manager.phase1_requirements = Phase1Requirements::default();
     manager.phase2_requirements = Phase2Requirements::default();
     manager.transition_pending = false;
-    manager.pending_target_phase = ProtocolPhase::CostSharingMinistry;
+    manager.pending_target_phase = ProtocolPhase::Phase1Hcsm;
     manager.bump = ctx.bumps.phase_manager;
 
     emit!(PhaseManagerInitialized {
         authority: ctx.accounts.authority.key(),
-        initial_phase: ProtocolPhase::CostSharingMinistry,
+        initial_phase: ProtocolPhase::Phase1Hcsm,
         timestamp: clock.unix_timestamp,
     });
 
@@ -70,7 +70,7 @@ pub struct CheckPhase1Eligibility<'info> {
     #[account(
         seeds = [PhaseManager::SEED_PREFIX],
         bump = phase_manager.bump,
-        constraint = phase_manager.current_phase == ProtocolPhase::CostSharingMinistry
+        constraint = phase_manager.current_phase == ProtocolPhase::Phase1Hcsm
             @ ReservesError::InvalidPhaseTransition
     )]
     pub phase_manager: Account<'info, PhaseManager>,
@@ -234,7 +234,7 @@ pub fn update_phase1_requirements(
     }
 
     emit!(PhaseRequirementsUpdated {
-        phase: ProtocolPhase::CostSharingMinistry,
+        phase: ProtocolPhase::Phase1Hcsm,
         updater: ctx.accounts.authority.key(),
         timestamp: Clock::get()?.unix_timestamp,
     });
@@ -269,8 +269,8 @@ pub fn propose_phase_transition(
 
     // Validate transition is sequential
     let valid_transition = match (&manager.current_phase, &target_phase) {
-        (ProtocolPhase::CostSharingMinistry, ProtocolPhase::HybridSandbox) => true,
-        (ProtocolPhase::HybridSandbox, ProtocolPhase::LicensedInsurer) => true,
+        (ProtocolPhase::Phase1Hcsm, ProtocolPhase::Phase2Hybrid) => true,
+        (ProtocolPhase::Phase2Hybrid, ProtocolPhase::Phase3Licensed) => true,
         _ => false,
     };
 
@@ -313,10 +313,10 @@ pub fn execute_phase_transition(ctx: Context<ExecutePhaseTransition>) -> Result<
 
     // Update phase timestamps
     match new_phase {
-        ProtocolPhase::HybridSandbox => {
+        ProtocolPhase::Phase2Hybrid => {
             manager.phase2_start = clock.unix_timestamp;
         }
-        ProtocolPhase::LicensedInsurer => {
+        ProtocolPhase::Phase3Licensed => {
             manager.phase3_start = clock.unix_timestamp;
         }
         _ => {}

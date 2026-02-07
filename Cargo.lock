@@ -336,6 +336,7 @@ version = "0.1.0"
 dependencies = [
  "anchor-lang",
  "anchor-spl",
+ "apollo_core",
  "apollo_governance",
 ]
 

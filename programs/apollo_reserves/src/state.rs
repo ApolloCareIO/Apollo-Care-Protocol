@@ -1,6 +1,7 @@
 // programs/apollo_reserves/src/state.rs
 
 use anchor_lang::prelude::*;
+pub use apollo_core::phase::ProtocolPhase;
 
 /// Reserve configuration - defines targets and parameters for the three-tier system
 /// PDA seeds: ["reserve_config"]
@@ -434,19 +435,7 @@ impl PhaseManager {
     pub const SEED_PREFIX: &'static [u8] = b"phase_manager";
 }
 
-/// Protocol phases - HCSM → Hybrid → Licensed
-#[derive(
-    AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq, InitSpace, Default,
-)]
-pub enum ProtocolPhase {
-    /// Phase 1: Health Care Sharing Ministry (not insurance)
-    #[default]
-    CostSharingMinistry,
-    /// Phase 2: Hybrid - HCSM + Regulatory Sandbox
-    HybridSandbox,
-    /// Phase 3: Fully licensed insurance carrier
-    LicensedInsurer,
-}
+// ProtocolPhase imported from apollo_core::phase (single source of truth)
 
 /// Requirements for Phase 1 → Phase 2 transition
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, InitSpace)]
