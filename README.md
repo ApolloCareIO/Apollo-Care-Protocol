@@ -17,7 +17,7 @@
     <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"/>
   </a>
   <a href="https://solana.com/">
-    <img src="https://img.shields.io/badge/Solana-Mainnet-9945FF?logo=solana&logoColor=white" alt="Solana"/>
+    <img src="https://img.shields.io/badge/Solana-Devnet-9945FF?logo=solana&logoColor=white" alt="Solana Devnet"/>
   </a>
   <a href="https://www.anchor-lang.com/">
     <img src="https://img.shields.io/badge/Anchor-0.29.0-ff69b4" alt="Anchor"/>
